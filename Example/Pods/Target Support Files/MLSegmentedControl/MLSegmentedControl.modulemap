@@ -1,0 +1,6 @@
+framework module MLSegmentedControl {
+  umbrella header "MLSegmentedControl-umbrella.h"
+
+  export *
+  module * { export * }
+}

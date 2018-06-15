@@ -1,0 +1,16 @@
+PODS:
+  - MLSegmentedControl (0.1.0)
+
+DEPENDENCIES:
+  - MLSegmentedControl (from `../`)
+
+EXTERNAL SOURCES:
+  MLSegmentedControl:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  MLSegmentedControl: e05a53226a9639ec2b3d8ff1062d2dfbe8321bac
+
+PODFILE CHECKSUM: b592572835a0738d7ed7a45b0042ab6c92e987e7
+
+COCOAPODS: 1.5.0
