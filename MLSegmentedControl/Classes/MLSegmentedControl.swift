@@ -47,21 +47,21 @@ open class MLSegmentedControl: UIControl {
     
     
     /// 标题数组
-    var sectionsTitles:Array<String>?{
+    var sectionsTitles:Array<String>{
         didSet{
            
         }
     }
     
     /// 图片名称
-    var sectionImages:Array<String>?{
+    var sectionImages:Array<String>{
         didSet{
             
         }
     }
     
     /// 选中图片名称
-    var sectionSelectImages:Array<String>?{
+    var sectionSelectImages:Array<String>{
         didSet{
             
         }
@@ -180,9 +180,10 @@ open class MLSegmentedControl: UIControl {
     func loadSegmentedControlTypeText(rect:CGRect){
         
     
-//        for item in <#items#> {
-//            <#code#>
-//        }
+
+        for item in self.sectionsTitles {
+          let textLayer = CATextLayer.init()
+        }
     
     
     
