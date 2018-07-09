@@ -7,6 +7,13 @@
 
 import UIKit
 
+
+enum MLSegmentedControlType: Int {
+    case MLSegmentedControlTypeText
+    case MLSegmentedControlTypeImages
+    case MLSegmentedControlTypeTextImages
+}
+
 open class MLSegmentedControl: UIControl {
 
     
@@ -39,25 +46,76 @@ open class MLSegmentedControl: UIControl {
     
     
     
+    /// 标题数组
+    var sectionsTitles:Array<String>?{
+        didSet{
+           
+        }
+    }
     
+    /// 图片名称
+    var sectionImages:Array<String>?{
+        didSet{
+            
+        }
+    }
     
-    // default = 0
-    var selectedSegmentIndex = 0
-    
+    /// 选中图片名称
+    var sectionSelectImages:Array<String>?{
+        didSet{
+            
+        }
+    }
     
 
-    public init(titles:Array<String>,images:Array<String>) {
+    
+    /// 视图背景颜色
+    var backgroundColorSegment:UIColor?
+    
+    
+    /// 展现类型
+    var type:MLSegmentedControlType = .MLSegmentedControlTypeText
+    
+
+    /// 当前选中索引
+    var selectedSegmentIndex = 0
+    
+    public convenience init(sectionsTitles sectiontitles:Array<String>){
         self.init()
+        self.type = .MLSegmentedControlTypeText
+        self.sectionsTitles = sectiontitles
+        
+        initialize()
+    }
+
+    
+    public convenience init(sectionForImages sectionImages:Array<String>,sectionSelectImages selectImages:Array<String> ) {
+        self.init()
+        self.type = .MLSegmentedControlTypeImages
+        self.sectionImages = sectionImages
+        self.sectionSelectImages = selectImages
+        
         initialize()
     }
     
     
-    public init(titles:Array<String>) {
+    public convenience init?(sectionsTitles sectiontitles:Array<String>,sectionForImages sectionImages:Array<String>,sectionSelectImages selectImages:Array<String>) {
+        if sectiontitles.count != selectImages.count {
+            return nil;
+        }
         self.init()
+        self.type = .MLSegmentedControlTypeTextImages
+        self.sectionsTitles = sectiontitles
+        self.sectionImages = sectionImages
+        self.sectionSelectImages = selectImages
+
+        defaultValue()
         initialize()
     }
     
-    public override init(frame: CGRect) {
+    
+    
+    private override init(frame: CGRect) {
         super.init(frame: frame)
     }
     
@@ -65,32 +123,71 @@ open class MLSegmentedControl: UIControl {
        super.init(coder: aDecoder)
     }
     
+    
+    // 设置默认值
+    func defaultValue(){
+        self.backgroundColorSegment = UIColor.red
+    }
 
     open override func layoutSubviews() {
         super.layoutSubviews()
         
+        self.scrollView.frame = CGRect.init(x: 0, y: 0, width: self.frame.maxX, height: self.frame.maxY)
+        
     }
+
+    func initialize(){
+      self.addSubview(scrollView)
+
+    // https://www.zybuluo.com/fiy-fish/note/589307
+        /**不透明的
+         使用 opaque 可以提高系统的视图绘制性能，当opaque = yes时，系统可以快速高效的绘制视图，这个时候view的alpha一定等于1
+         当view.alpha小于1时，opaque一定要设置为NO,否则会发生意想不到的后果
+         1.opaque默认为YES，此时view.alpha=1
+         2.view,alpha小于1时，opaque一定要设置为NO
+         */
+     self.isOpaque = false
+        
+        // 当视图的size 发生变化时 会调用 drawrect 方法
+     self.contentMode = .redraw
+        
+        
+        
+    }
+    
     
     override open func draw(_ rect: CGRect) {
         
+        // 绘制一个带有颜色的矩形
+        self.backgroundColorSegment?.setFill()
+        UIRectFill(self.bounds)
+
+        switch self.type {
+        case .MLSegmentedControlTypeText:
+            loadSegmentedControlTypeText(rect: rect)
+            break
+        case .MLSegmentedControlTypeImages:
+            break
+        case .MLSegmentedControlTypeTextImages:
+            break
+        }
+
     }
     
     
-    func initialize(){
-      self.addSubview(scrollView)
-      self.backgroundColor = UIColor.white
+    
+    /// 加载类型一
+    func loadSegmentedControlTypeText(rect:CGRect){
         
-        
-        
-        // 当视图的size 发生变化时 会调用 drawrect 方法
-        self.contentMode = .redraw
-        
-        
+    
+//        for item in <#items#> {
+//            <#code#>
+//        }
+    
+    
+    
         
     }
-    
-    
-    
     
     
     
