@@ -81,7 +81,9 @@ open class MLSegmentedControl: UIControl {
     var selectedSegmentIndex = 0
     
     public convenience init(sectionsTitles sectiontitles:Array<String>){
-        self.init()
+        
+        self.init(frame: CGRect.zero, sectionsTitles: sectiontitles, sectionForImages: nil, sectionSelectImages: sectiontitles)
+        
         self.type = .MLSegmentedControlTypeText
         self.sectionsTitles = sectiontitles
         
@@ -90,11 +92,12 @@ open class MLSegmentedControl: UIControl {
 
     
     public convenience init(sectionForImages sectionImages:Array<String>,sectionSelectImages selectImages:Array<String> ) {
-        self.init()
+         self.init(frame: CGRect.zero, sectionsTitles: nil, sectionForImages: sectionImages, sectionSelectImages: selectImages)
         self.type = .MLSegmentedControlTypeImages
         self.sectionImages = sectionImages
         self.sectionSelectImages = selectImages
         
+
         initialize()
     }
     
@@ -103,25 +106,31 @@ open class MLSegmentedControl: UIControl {
         if sectiontitles.count != selectImages.count {
             return nil;
         }
-        self.init()
+        self.init(frame: CGRect.zero, sectionsTitles: sectiontitles, sectionForImages: sectionImages, sectionSelectImages: selectImages)
+        
         self.type = .MLSegmentedControlTypeTextImages
-        self.sectionsTitles = sectiontitles
-        self.sectionImages = sectionImages
-        self.sectionSelectImages = selectImages
+      
 
+       
+    }
+    
+    
+    // 指定构造函数
+    private init(frame: CGRect, sectionsTitles sectiontitles:Array<String>?,sectionForImages sectionImages:Array<String>?,sectionSelectImages selectImages:Array<String>?) {
+     
+        self.sectionsTitles = sectiontitles!
+        self.sectionImages = sectionImages!
+        self.sectionSelectImages = selectImages!
+        super.init(frame: frame)
         defaultValue()
         initialize()
     }
     
-    
-    
-    private override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-    
     required public init?(coder aDecoder: NSCoder) {
-       super.init(coder: aDecoder)
+        fatalError("init(coder:) has not been implemented")
     }
+    
+   
     
     
     // 设置默认值
@@ -171,6 +180,8 @@ open class MLSegmentedControl: UIControl {
         case .MLSegmentedControlTypeTextImages:
             break
         }
+        
+       
 
     }
     
@@ -178,11 +189,16 @@ open class MLSegmentedControl: UIControl {
     
     /// 加载类型一
     func loadSegmentedControlTypeText(rect:CGRect){
-        
     
-
         for item in self.sectionsTitles {
           let textLayer = CATextLayer.init()
+//
+//            textLayer.frame
+           
+            
+            
+            
+            
         }
     
     
