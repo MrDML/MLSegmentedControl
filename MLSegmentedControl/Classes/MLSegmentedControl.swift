@@ -26,6 +26,9 @@ open class MLSegmentedControl: UIControl {
     }()
     
     
+    
+   public var MLTitleFormatterBlock:(()-> Void)!
+    
     // 条状指示器
     lazy var selectionIndicatorStripLayer: CALayer = {
         let stripLayer = CALayer()
@@ -191,19 +194,48 @@ open class MLSegmentedControl: UIControl {
     func loadSegmentedControlTypeText(rect:CGRect){
     
         for item in self.sectionsTitles {
-          let textLayer = CATextLayer.init()
-//
-//            textLayer.frame
-           
+            
+            
+        let stringWidth = 0;
+        let stringHeight = 0;
             
             
             
             
         }
+
+    }
     
     
-    
+   public func testBlock(complete:(_ a:Int, _ b:Int)-> Void){
         
+    }
+    
+    
+    
+    
+    /// 计算标题的size
+    ///
+    /// - Parameter index: 索引
+    func calculateTitleSizeAtIndex(index:Int) -> CGSize{
+        
+        if index >= self.sectionsTitles.count {
+            return  CGSize.zero
+        }
+        
+        let title:AnyObject = self.sectionsTitles[index] as AnyObject
+        
+        title.isKind(of: NSAttributedString.self)
+        
+
+        MLTitleFormatterBlock = { () -> Void in
+            
+            
+        }
+        
+       
+        
+        return CGSize.zero
     }
     
     
