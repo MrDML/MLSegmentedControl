@@ -194,22 +194,15 @@ open class MLSegmentedControl: UIControl {
     func loadSegmentedControlTypeText(rect:CGRect){
     
         for item in self.sectionsTitles {
-            
-            
+   
         let stringWidth = 0;
         let stringHeight = 0;
-            
-            
-            
-            
+
         }
 
     }
     
-    
-   public func testBlock(complete:(_ a:Int, _ b:Int)-> Void){
-        
-    }
+ 
     
     
     
@@ -223,17 +216,18 @@ open class MLSegmentedControl: UIControl {
             return  CGSize.zero
         }
         
-        let title:AnyObject = self.sectionsTitles[index] as AnyObject
+        let title = self.sectionsTitles[index]
         
-        title.isKind(of: NSAttributedString.self)
-        
-
-        MLTitleFormatterBlock = { () -> Void in
+        if ( title.count > 0 && self.MLTitleFormatterBlock == nil) {
             
+            title
+            
+        }else{
             
         }
+      
         
-       
+  
         
         return CGSize.zero
     }
