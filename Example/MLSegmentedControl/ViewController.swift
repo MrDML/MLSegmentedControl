@@ -14,9 +14,13 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
        exampleDemo()
+        
+        
+       
       
     }
 
+    
     
     func exampleDemo(){
         let titles = ["One","Two","Three"]
@@ -24,6 +28,10 @@ class ViewController: UIViewController {
         let selectImages = ["imageName","imageName","imageName"]
         let segmentedControl = MLSegmentedControl.init(sectionsTitles: titles, sectionForImages: images, sectionSelectImages: selectImages)
         
+//        segmentedControl?.titleFormatterBlock = { (_ segmentedControl:MLSegmentedControl,_ title:String,_ index:Int,_ selected:Bool) -> NSAttributedString in
+        
+//            return NSAttributedString.init()
+//        }
         segmentedControl?.frame = CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 40)
         self.view.addSubview(segmentedControl!)
     }
