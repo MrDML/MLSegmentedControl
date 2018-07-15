@@ -23,17 +23,22 @@ class ViewController: UIViewController {
     
     
     func exampleDemo(){
-        let titles = ["One","Two","Three"]
-        let images = ["imageName","imageName","imageName"]
-        let selectImages = ["imageName","imageName","imageName"]
-        let segmentedControl = MLSegmentedControl.init(sectionsTitles: titles, sectionForImages: images, sectionSelectImages: selectImages)
+        let titles = ["One","Two","Three","1","2","3","4","5","6","7"]
+//        let images = ["imageName","imageName","imageName","1","2","3","4","5","6","7"]
+//        let selectImages = ["imageName","imageName","imageName","1","2","3","4","5","6","7"]
+        let segmentedControl = MLSegmentedControl.init(sectionsTitles: titles)
         
 //        segmentedControl?.titleFormatterBlock = { (_ segmentedControl:MLSegmentedControl,_ title:String,_ index:Int,_ selected:Bool) -> NSAttributedString in
         
 //            return NSAttributedString.init()
 //        }
-        segmentedControl?.frame = CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 40)
-        self.view.addSubview(segmentedControl!)
+        segmentedControl.frame = CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 40)
+        segmentedControl.segmentWidthStyle = .MLSegmentedControlSegmentWidthStyleDynamic
+//        segmentedControl?.type =
+//        segmentedControl.borderColor
+        segmentedControl.shouldStretchSegmentsToScreenSize = true
+        segmentedControl.borderType = .None
+        self.view.addSubview(segmentedControl)
     }
     
     
