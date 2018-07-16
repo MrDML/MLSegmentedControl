@@ -113,14 +113,41 @@ public enum MLSegmentedControlNoSegment:Int {
 }
 
 
+class MLScrollView: UIScrollView {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if self.isDragging == false {
+            self.next?.touchesBegan(touches, with: event)
+        }else{
+            super.touchesBegan(touches, with: event)
+        }
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if self.isDragging == false {
+            self.next?.touchesMoved(touches, with: event)
+        }else{
+            super.touchesMoved(touches, with: event)
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if self.isDragging == false {
+            self.next?.touchesEnded(touches, with: event)
+        }else{
+            super.touchesEnded(touches, with: event)
+        }
+    }
+    
+}
+
 
 
 
 open class MLSegmentedControl: UIControl {
 
     
-    lazy var scrollView: UIScrollView = {
-        let scr = UIScrollView.init()
+    lazy var scrollView: MLScrollView = {
+        let scr = MLScrollView.init()
         scr.scrollsToTop = false
         scr.showsVerticalScrollIndicator = false
         scr.showsHorizontalScrollIndicator = false
@@ -249,6 +276,9 @@ open class MLSegmentedControl: UIControl {
     // MARK: 选中SegmentBox背景颜色
     public var selectionIndicatorBoxColor:UIColor = UIColor(red: 52.0/255.0, green: 181.0/255.0, blue: 229.0/255.0, alpha: 1)
     
+    // MARK: 是否可以点击默认true
+    public var touchEnabled: Bool = true
+    
     
     
     public convenience init(sectionsTitles sectiontitles:Array<String>){
@@ -375,7 +405,7 @@ open class MLSegmentedControl: UIControl {
         
         if self.type == .MLSegmentedControlTypeText && self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleFixed {
             for (i,title) in self.sectionsTitles.enumerated() {
-                print("index:\(i) item:\(title)")
+                print("index:\(i) title:\(title)")
                 let size =  self.calculateTitleSizeAtIndex(index: i)
                 let stringWidth = size.width + self.segmentEdgeInset.left + self.segmentEdgeInset.right
                 self.segmentWidth = max(stringWidth, self.segmentWidth)
@@ -808,6 +838,115 @@ open class MLSegmentedControl: UIControl {
         }
         
     }
+    
+    
+    open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+      guard let touchLoaction = touches.first?.location(in: self) else { return }
+        
+        
+        // 整个segementControl点击区域不是单个
+      let enlargeRect = CGRect(x: self.bounds.origin.x - self.enlargeEdgeInset.left, y: self.bounds.origin.y - self.enlargeEdgeInset.top, width: self.bounds.width + self.enlargeEdgeInset.left + self.enlargeEdgeInset.right, height: self.bounds.height + self.enlargeEdgeInset.top + self.enlargeEdgeInset.bottom)
+        
+        var segmentIndex:Int = 0
+        if enlargeRect.contains(touchLoaction){
+            
+            if self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleFixed {
+                segmentIndex = Int((touchLoaction.x + self.scrollView.contentOffset.x) / self.segmentWidth)
+            }else if self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleDynamic{
+                
+                var dis = touchLoaction.x + self.scrollView.contentOffset.x
+                for (_,width) in self.segmentWidthsArray.enumerated(){
+                    dis -= width
+                    if dis < 0 {break}
+                     segmentIndex += 1
+                    
+                }
+
+            }
+            
+            
+            var sectionsCount:Int = 0
+            if self.type == .MLSegmentedControlTypeText || self.type == .MLSegmentedControlTypeTextImages{
+                sectionsCount = self.sectionsTitles.count
+            }else if self.type == .MLSegmentedControlTypeImages{
+                sectionsCount = self.sectionImages.count
+            }
+            
+            if segmentIndex != self.selectedSegmentIndex && segmentIndex < sectionsCount{
+                if self.touchEnabled == true{
+                    self.setSelectedSegmentIndex(index: segmentIndex, animation: true, notify: true)
+                }
+            }
+            
+            
+        }
+        
+    }
+    
+    
+    // MARK: Index Change
+    
+    //MARK: 设置索引
+    
+    func setSelectedSegmentIndex(index:Int){
+        
+    }
+    
+    func setSelectedSegmentIndex(index:Int,animation:Bool){
+        
+    }
+    
+    func setSelectedSegmentIndex(index:Int,animation:Bool,notify:Bool){
+        self.selectedSegmentIndex = index
+        self.setNeedsDisplay()
+        if index == MLSegmentedControlNoSegment.NoSelectSegment.rawValue {
+            self.selectionIndicatorStripLayer.removeFromSuperlayer()
+            self.selectionIndicatorBoxLayer.removeFromSuperlayer()
+            self.selectionIndicatorArrowLayer.removeFromSuperlayer()
+        }else{
+            self.scrollToSelectedSegmentIndex(animation: animation)
+            
+           
+            
+            
+            
+            
+        }
+    }
+    
+    
+   
+    // MARK:滚动到指定的位置
+    func scrollToSelectedSegmentIndex(animation:Bool){
+        var rectForSelectedIndex:CGRect = CGRect.zero
+        var selectedSegmentOffset: CGFloat = 0
+        
+        if self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleFixed {
+            rectForSelectedIndex = CGRect(x: self.segmentWidth * CGFloat(self.selectedSegmentIndex), y: 0, width: self.segmentWidth, height: self.frame.height)
+            selectedSegmentOffset = self.frame.width * 0.5 - self.segmentWidth * 0.5
+        }else{
+            var offsetX:CGFloat = 0
+            for(index,width) in self.segmentWidthsArray.enumerated() {
+                if self.selectedSegmentIndex == index {break}
+                offsetX += width
+            }
+            rectForSelectedIndex = CGRect(x: offsetX, y: 0, width: self.segmentWidthsArray[self.selectedSegmentIndex], height: self.frame.height)
+            
+            selectedSegmentOffset = self.frame.width * 0.5 - self.segmentWidthsArray[self.selectedSegmentIndex] * 0.5
+        }
+       
+        
+        var scrollRect = rectForSelectedIndex
+        scrollRect.origin.x -= selectedSegmentOffset
+        scrollRect.size.width += selectedSegmentOffset * 2
+        self.scrollView.scrollRectToVisible(scrollRect, animated: animation)
+
+    }
+    
+    
+    
+    
 
 
 }
