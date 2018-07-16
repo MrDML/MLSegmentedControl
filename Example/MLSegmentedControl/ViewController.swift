@@ -33,11 +33,13 @@ class ViewController: UIViewController {
 //            return NSAttributedString.init()
 //        }
         segmentedControl.frame = CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 40)
-        segmentedControl.segmentWidthStyle = .MLSegmentedControlSegmentWidthStyleDynamic
+        segmentedControl.segmentWidthStyle = .MLSegmentedControlSegmentWidthStyleFixed
+        segmentedControl.selectionStyle = .MLHMSegmentedControlSelectionStyleBox
 //        segmentedControl?.type =
 //        segmentedControl.borderColor
         segmentedControl.shouldStretchSegmentsToScreenSize = true
         segmentedControl.borderType = .None
+//        segmentedControl.selectedSegmentIndex = MLSegmentedControlNoSegment.NoSelectSegment.rawValue
         self.view.addSubview(segmentedControl)
     }
     

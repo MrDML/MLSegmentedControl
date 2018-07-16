@@ -64,6 +64,8 @@ public enum MLSegmentedControlSelectionIndicatorLocation:Int {
 
 
 
+
+/// 边缘线条位置
 public struct MLSegmentedControlBorderType:OptionSet {
     
     
@@ -82,10 +84,6 @@ public struct MLSegmentedControlBorderType:OptionSet {
         
         self.rawValue = rawValue
     }
-}
-
-public struct MLTest {
-    
 }
 
 
@@ -107,6 +105,13 @@ public enum MLSegmentedControlImagePosition {
 }
 
 
+/// 默认选中索引
+/// 如果选中索引值 NoSelectSegment 为没有选中
+/// - NoSelectSegment: <#NoSelectSegment description#>
+public enum MLSegmentedControlNoSegment:Int {
+    case NoSelectSegment = -1
+}
+
 
 
 
@@ -127,20 +132,20 @@ open class MLSegmentedControl: UIControl {
     
      var titleFormatterBlock:MLTitleFormatterBlock?
     
-    /// 条状指示器
+    //MARK: 条状线条指示器
     lazy var selectionIndicatorStripLayer: CALayer = {
         let stripLayer = CALayer()
         return stripLayer
         
     }()
     
-    /// 箭头指示器
+    //MARK: 箭头指示器
     lazy var selectionIndicatorArrowLayer: CALayer = {
         let arrowLayer  = CALayer()
         return arrowLayer
     }()
     
-    /// 矩形盒指示器
+    //MARK: 矩形盒指示器
     lazy var selectionIndicatorBoxLayer: CALayer = {
         let  boxLayer  = CALayer()
         return boxLayer
@@ -148,93 +153,101 @@ open class MLSegmentedControl: UIControl {
     
     
     
-    /// 标题数组
+    //MARK: 标题数组
    public var sectionsTitles:Array<String>{
         didSet{
-           
+           // TODO:do somthing
         }
     }
     
-    /// 图片名称
-   public var sectionImages:Array<String>{
+    //MARK: 图片名称
+   public var sectionImages:Array<UIImage>{
         didSet{
-            
+            // TODO:do somthing
         }
     }
     
-    /// 选中图片名称
-   public var sectionSelectImages:Array<String>{
+    //MARK: 选中图片名称
+   public var sectionSelectImages:Array<UIImage>{
         didSet{
-            
+            // TODO:do somthing
         }
     }
     
 
     
-    /// 视图背景颜色
+    //MARK: 视图背景颜色
    public var backgroundColorSegment:UIColor?
     
     
-    /// 展现类型
+    //MARK: 展现类型
    public var type:MLSegmentedControlType = .MLSegmentedControlTypeText
     
-    /// 标题的宽度是固定还是动态
+    //MARK: 标题的宽度是固定还是动态
   public  var segmentWidthStyle:MLSegmentedControlSegmentWidthStyle = .MLSegmentedControlSegmentWidthStyleFixed
     
-    /// 选中样式
+    //MARK: 选中样式
    public var selectionStyle:MLSegmentedControlSelectionStyle = MLSegmentedControlSelectionStyle.MLSegmentedControlSelectionStyleTextWidthStripe
     
     /// <#Description#>
   public  var borderType:MLSegmentedControlBorderType = MLSegmentedControlBorderType.Top
     
     
-    /// 线条位置
-  public  var selectionIndicatorLocation:MLSegmentedControlSelectionIndicatorLocation = MLSegmentedControlSelectionIndicatorLocation.MLSegmentedControlSelectionIndicatorLocationUp
+    //MARK: 线条位置
+  public  var selectionIndicatorLocation:MLSegmentedControlSelectionIndicatorLocation = .MLSegmentedControlSelectionIndicatorLocationDown
     
-    /// 图片位置
+    //MARK: 图片位置
    public var imagePosition:MLSegmentedControlImagePosition = MLSegmentedControlImagePosition.MLSegmentedControlImagePositionAboveText
 
-    /// 当前选中索引
+    //MARK: 当前选中索引
    public var selectedSegmentIndex = 0
     
-    /// segment 宽度
+    // MARK: segment 宽度
    public var segmentWidth:CGFloat = 0
     
-    /// 底部的指示线条的高度
-   public var selectionIndicatorHeight:CGFloat = 0
+    // MARK: 底部的指示线条的高度
+   public var selectionIndicatorHeight:CGFloat = 5
 
-    /// segment 宽度数组
+    // MARK: segment 宽度数组
     lazy var segmentWidthsArray:Array<CGFloat> = {
         let array = Array<CGFloat>()
         return array
     }()
     
     
-    /// 是否填充整个屏幕
+    // MARK: 是否填充整个屏幕
    public var shouldStretchSegmentsToScreenSize:Bool = false
     
-    /// 预留参数，微调标题位置
+    // MARK: 预留参数，微调标题位置
    public var segmentEdgeInset:UIEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 5)
 
-    /// 预留参数 放大点击区域
+    // MARK: 预留参数 放大点击区域
    public var enlargeEdgeInset:UIEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
+    
+    // MARK: 预留参数 扩展选中线条的具体位置
+    public var selectionIndicatorEdgeInsets:UIEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
     
     
     ///  垂直分割线
     
-    /// 是否显示分割线
+    ///MARK: 是否显示分割线
    public var verticalDividerEnabled:Bool = true
     
-    /// 分割线宽
+    //MARK: 分割线宽
    public var verticalDividerWidth:CGFloat = 1
     
-    /// 分割线的颜色
+    //MARK: 分割线的颜色
    public var verticalDividerColor:UIColor = UIColor.black
     
-    /// 视图边缘线颜色
+    //MARK: 视图边缘线颜色
    public var borderColor:UIColor = UIColor.black
    public var borderWidth:CGFloat = 1
     
+    //MARK: 选中Segment底部线条颜色
+    public var selectionIndicatorColor:UIColor = UIColor(red: 52.0/255.0, green: 181.0/255.0, blue: 229.0/255.0, alpha: 1)
+
+    // MARK: 选中SegmentBox背景颜色
+    public var selectionIndicatorBoxColor:UIColor = UIColor(red: 52.0/255.0, green: 181.0/255.0, blue: 229.0/255.0, alpha: 1)
     
     
     
@@ -253,7 +266,7 @@ open class MLSegmentedControl: UIControl {
     
     
     
-    public convenience init(sectionForImages sectionImages:Array<String>,sectionSelectImages selectImages:Array<String> ) {
+    public convenience init(sectionForImages sectionImages:Array<UIImage>,sectionSelectImages selectImages:Array<UIImage> ) {
          self.init(frame: CGRect.zero, sectionsTitles: nil, sectionForImages: sectionImages, sectionSelectImages: selectImages)
         self.type = .MLSegmentedControlTypeImages
         self.sectionImages = sectionImages
@@ -264,7 +277,7 @@ open class MLSegmentedControl: UIControl {
     }
     
     
-    public convenience init?(sectionsTitles sectiontitles:Array<String>,sectionForImages sectionImages:Array<String>,sectionSelectImages selectImages:Array<String>) {
+    public convenience init?(sectionsTitles sectiontitles:Array<String>,sectionForImages sectionImages:Array<UIImage>,sectionSelectImages selectImages:Array<UIImage>) {
         if sectiontitles.count != selectImages.count {
             return nil;
         }
@@ -276,24 +289,24 @@ open class MLSegmentedControl: UIControl {
     
     
     // 指定构造函数
-    private init(frame: CGRect, sectionsTitles sectiontitles:Array<String>?,sectionForImages sectionImages:Array<String>?,sectionSelectImages selectImages:Array<String>?) {
+    private init(frame: CGRect, sectionsTitles sectiontitles:Array<String>?,sectionForImages sectionImages:Array<UIImage>?,sectionSelectImages selectImages:Array<UIImage>?) {
      
         
         if sectiontitles != nil {
             self.sectionsTitles = sectiontitles!
         }else{
-            self.sectionsTitles = Array.init(repeating: "", count: 1)
+            self.sectionsTitles = Array.init(repeating: String(), count: 1)
         }
         
         if sectionImages != nil {
              self.sectionImages = sectionImages!
         }else{
-            self.sectionImages = Array.init(repeating: "", count: 1)
+            self.sectionImages = Array.init(repeating: UIImage(), count: 1)
         }
         if selectImages != nil {
              self.sectionSelectImages = selectImages!
         }else{
-            self.sectionSelectImages = Array.init(repeating: "", count: 1)
+            self.sectionSelectImages = Array.init(repeating: UIImage(), count: 1)
         }
         
         
@@ -317,6 +330,7 @@ open class MLSegmentedControl: UIControl {
         self.backgroundColorSegment = UIColor.red
     }
 
+    // MARK:布局子视图方法
     open override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -346,7 +360,7 @@ open class MLSegmentedControl: UIControl {
         
     }
     
-    /// 更新视图位置
+    // MARK: 更新视图位置
     func updateSegmentsRects(){
         
       
@@ -359,7 +373,7 @@ open class MLSegmentedControl: UIControl {
         
         
         
-        if self.type == MLSegmentedControlType.MLSegmentedControlTypeText && self.segmentWidthStyle == MLSegmentedControlSegmentWidthStyle.MLSegmentedControlSegmentWidthStyleFixed {
+        if self.type == .MLSegmentedControlTypeText && self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleFixed {
             for (i,title) in self.sectionsTitles.enumerated() {
                 print("index:\(i) item:\(title)")
                 let size =  self.calculateTitleSizeAtIndex(index: i)
@@ -367,7 +381,7 @@ open class MLSegmentedControl: UIControl {
                 self.segmentWidth = max(stringWidth, self.segmentWidth)
             }
           
-        }else if self.type == MLSegmentedControlType.MLSegmentedControlTypeText && self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleDynamic{
+        }else if self.type == .MLSegmentedControlTypeText && self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleDynamic{
     
             var mutableSegmentWidths:Array<CGFloat> = Array()
             var totalWidth:CGFloat = 0
@@ -396,36 +410,32 @@ open class MLSegmentedControl: UIControl {
             }
             self.segmentWidthsArray = mutableSegmentWidths
 
-        }else if self.type == MLSegmentedControlType.MLSegmentedControlTypeImages{
+        }else if self.type == .MLSegmentedControlTypeImages{
+            
+            // TODO:do somthing
+            
+        }else if self.type == .MLSegmentedControlTypeImages && self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleFixed{
+            
+            // TODO:do somthing
+            
+        }else if self.type == .MLSegmentedControlTypeTextImages && self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleDynamic{
             
             
-            
-        }else if self.type == MLSegmentedControlType.MLSegmentedControlTypeImages && self.segmentWidthStyle == MLSegmentedControlSegmentWidthStyle.MLSegmentedControlSegmentWidthStyleFixed{
-            
-            
-            
-        }else if self.type == MLSegmentedControlType.MLSegmentedControlTypeTextImages && self.segmentWidthStyle == MLSegmentedControlSegmentWidthStyle.MLSegmentedControlSegmentWidthStyleDynamic{
-            
-            
-            
+            // TODO:do somthing
         }
-        
-        
-        
-        
-        
-        
+
         self.scrollView.isScrollEnabled = true
         self.scrollView.contentSize = CGSize.init(width: totalSegmentedControlWidth(), height: self.frame.size.height)
         
     }
     
- 
+    // FIXME:动态标题->计算总宽度
     func totalSegmentedControlWidth() -> CGFloat {
         
-        if self.segmentWidthStyle == MLSegmentedControlSegmentWidthStyle.MLSegmentedControlSegmentWidthStyleDynamic {
+        if self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleDynamic {
             
            return self.segmentWidthsArray.reduce(0) {$0 + $1}
+            // FIXME:闭包计算总长度的写法 删
 //         return self.segmentWidthsArray.reduce(0) { (a, b) -> CGFloat in
 //                return a + b
 //            }
@@ -438,11 +448,20 @@ open class MLSegmentedControl: UIControl {
     
 
     
+    // MARK: 绘制方法
     override open func draw(_ rect: CGRect) {
-        
+
+        self.selectionIndicatorStripLayer.backgroundColor = UIColor.blue.cgColor
+            //self.selectionIndicatorColor.cgColor
+        self.selectionIndicatorArrowLayer.backgroundColor = self.selectionIndicatorColor.cgColor
+        self.selectionIndicatorBoxLayer.backgroundColor = self.selectionIndicatorBoxColor.cgColor
+
         // 绘制一个带有颜色的矩形
         self.backgroundColorSegment?.setFill()
         UIRectFill(self.bounds)
+        
+        // 每次绘制都先清空在添加视图
+        self.scrollView.layer.sublayers = nil
 
         switch self.type {
         case .MLSegmentedControlTypeText:
@@ -456,12 +475,35 @@ open class MLSegmentedControl: UIControl {
         }
         
        
+      // 添加 其他附件视图
+       
+        if self.selectedSegmentIndex != MLSegmentedControlNoSegment.NoSelectSegment.rawValue {
 
+            if self.selectionIndicatorStripLayer.superlayer == nil {
+               
+                self.scrollView.layer.addSublayer(self.selectionIndicatorStripLayer)
+                self.selectionIndicatorStripLayer.frame = self.frameForSelectionIndicator()
+                
+                if self.selectionStyle == .MLHMSegmentedControlSelectionStyleBox && self.selectionIndicatorBoxLayer.superlayer == nil{
+                    
+                    self.scrollView.layer.insertSublayer(self.selectionIndicatorBoxLayer, at: 0)
+                    self.selectionIndicatorBoxLayer.frame = self.frameForFillerSelectionIndicator()
+                }
+                
+                
+            }else if self.selectionIndicatorArrowLayer.superlayer == nil {
+            
+                self.scrollView.layer.addSublayer(self.selectionIndicatorArrowLayer)
+                self.setArrowFrame()
+  
+            }
+
+        }
     }
     
     
     
-    /// 加载类型一
+    /// 加载文本类型
     func loadSegmentedControlTypeText(rect:CGRect){
     
     
@@ -477,10 +519,10 @@ open class MLSegmentedControl: UIControl {
             var fullRect:CGRect = CGRect.zero
             
       
-            let locationUp:Bool = self.selectionIndicatorLocation == MLSegmentedControlSelectionIndicatorLocation.MLSegmentedControlSelectionIndicatorLocationUp ? true : false
+            let locationUp:Bool = self.selectionIndicatorLocation == .MLSegmentedControlSelectionIndicatorLocationUp ? true : false
             
             // 非选中Box样式
-            let selectionStyleNotBox = self.selectionStyle != MLSegmentedControlSelectionStyle.MLHMSegmentedControlSelectionStyleBox ? true : false
+            let selectionStyleNotBox = self.selectionStyle != .MLHMSegmentedControlSelectionStyleBox ? true : false
             
             
             let notBoxValue = CGFloat(selectionStyleNotBox.hashValue)
@@ -490,14 +532,14 @@ open class MLSegmentedControl: UIControl {
             
           
             var rectReslut:CGRect = CGRect.zero
-            if segmentWidthStyle == MLSegmentedControlSegmentWidthStyle.MLSegmentedControlSegmentWidthStyleFixed { // 固定宽度
+            if segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleFixed { // 固定宽度
                 let x = self.segmentWidth * CGFloat(i) + (self.segmentWidth - stringWidth) * 0.5
                 
 
                 rectReslut = CGRect.init(x: x, y: y, width: stringWidth, height: stringHeight)
 
                 // 分割线位置
-                rectDiv = CGRect.init(x:  self.segmentWidth * CGFloat(i) - self.verticalDividerWidth * 0.5, y: self.selectionIndicatorHeight * 2, width: self.verticalDividerWidth, height: self.frame.height - self.selectionIndicatorHeight * 4)
+                rectDiv = CGRect.init(x:  self.segmentWidth * CGFloat(i) - self.verticalDividerWidth * 0.5, y: y, width: self.verticalDividerWidth, height: stringHeight)
                 // 填充
                 fullRect = CGRect.init(x: self.segmentWidth * CGFloat(i), y: 0, width: self.segmentWidth, height: rect.height)
                 
@@ -517,7 +559,7 @@ open class MLSegmentedControl: UIControl {
                     rectReslut = CGRect.init(x: offset, y: y, width: stringWidth, height: stringHeight)
                     
                     // 分割线位置
-                    rectDiv = CGRect.init(x:  offset - self.verticalDividerWidth * 0.5, y: self.selectionIndicatorHeight * 2, width: self.verticalDividerWidth, height: self.frame.height - self.selectionIndicatorHeight * 4)
+                    rectDiv = CGRect.init(x:  offset - self.verticalDividerWidth * 0.5, y: y, width: self.verticalDividerWidth, height: stringHeight)
                     // 填充 这里到底是 self.segmentWidth 还是 stringWidth 需要验证
                     fullRect = CGRect.init(x: offset, y: 0, width: stringWidth, height: rect.height)
                 }
@@ -527,6 +569,12 @@ open class MLSegmentedControl: UIControl {
             
             
             rectReslut = CGRect.init(x: CGFloat(roundf(Float(rectReslut.origin.x))), y: CGFloat(roundf(Float(rectReslut.origin.y))), width: CGFloat(roundf(Float(rectReslut.size.width))), height: CGFloat(roundf(Float(rectReslut.size.height))))
+            
+            rectDiv = CGRect.init(x: CGFloat(roundf(Float(rectDiv.origin.x))), y: CGFloat(roundf(Float(rectDiv.origin.y))), width: CGFloat(roundf(Float(rectDiv.size.width))), height: CGFloat(roundf(Float(rectDiv.size.height))))
+            
+    
+            fullRect = CGRect.init(x: CGFloat(roundf(Float(fullRect.origin.x))), y: CGFloat(roundf(Float(fullRect.origin.y))), width: CGFloat(roundf(Float(fullRect.size.width))), height: CGFloat(roundf(Float(fullRect.size.height))))
+            
             
             // 添加文字
             let titleLayer = CATextLayer.init()
@@ -569,7 +617,7 @@ open class MLSegmentedControl: UIControl {
         var size = CGSize.zero
         let title = self.sectionsTitles[index]
         let selected:Bool = (index == self.selectedSegmentIndex) ? true:false
-//        let a = self.titleFormatterBlock
+        
         if (!title.isEmpty && self.titleFormatterBlock == nil) {
             
             let title:NSString = title as NSString
@@ -588,7 +636,7 @@ open class MLSegmentedControl: UIControl {
     
     
     
-    
+    /// MARK:添加边缘线条
     func addBackgroundAndBorderLayerWithRect(rect:CGRect){
         
         // add backgroundLayer
@@ -625,9 +673,141 @@ open class MLSegmentedControl: UIControl {
     }
     
     
+    // MARK:计算地图视图选中位置
+    func frameForSelectionIndicator() -> CGRect {
+        
+        var indicatorYOffset:CGFloat = 0
+        
+        if self.selectionIndicatorLocation == .MLSegmentedControlSelectionIndicatorLocationUp {
+            indicatorYOffset = self.selectionIndicatorEdgeInsets.top
+        }
+    
+        if  self.selectionIndicatorLocation == .MLSegmentedControlSelectionIndicatorLocationDown {
+           indicatorYOffset = self.frame.height - self.selectionIndicatorHeight + self.selectionIndicatorEdgeInsets.bottom
+        }
+        
+        
+        var sectionWidth: CGFloat = 0
+
+        if self.type == .MLSegmentedControlTypeText {
+            sectionWidth = self.calculateTitleSizeAtIndex(index: self.selectedSegmentIndex).width
+        }else if self.type == .MLSegmentedControlTypeImages {
+             let  image = self.sectionImages[self.selectedSegmentIndex]
+            sectionWidth = image.size.width
+        }else {
+            
+          let size =  self.calculateTitleSizeAtIndex(index: self.selectedSegmentIndex)
+          let image = self.sectionImages[self.selectedSegmentIndex]
+            sectionWidth = max(size.width, image.size.width)
+            
+        }
+
+        if self.selectionStyle == .MLSegmentedControlSelectionStyleArrow {
+            
+            let widthToStatrtOfSelectedSegment = self.segmentWidth * CGFloat(self.selectedSegmentIndex)
+            let widthToEndOfSelectedSegment =  self.segmentWidth * CGFloat(self.selectedSegmentIndex) + self.segmentWidth
+            
+          let x = (widthToEndOfSelectedSegment - widthToStatrtOfSelectedSegment) * 0.5 + widthToStatrtOfSelectedSegment - self.selectionIndicatorHeight * 0.5
+            return CGRect(x: x, y: indicatorYOffset, width: self.selectionIndicatorHeight * 2, height: self.selectionIndicatorHeight)
+            
+        }else{
+            
+            
+            /** 三个条件
+            条件一： self.selectionStyle == .MLSegmentedControlSelectionStyleTextWidthStripe：指示线和标题宽度一样
+            条件二： 标题宽度必须是固定的 即 MLSegmentedControlSegmentWidthStyleFixed
+            条件三： sectionWidth <= self.segmentWidth 如果 sectionWidth >  self.segmentWidth 说明标题一定是动态计算宽度的
+             
+             */
+            if self.selectionStyle == .MLSegmentedControlSelectionStyleTextWidthStripe && self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleFixed && sectionWidth <= self.segmentWidth{
+                let widthToStatrtOfSelectedSegment = self.segmentWidth * CGFloat(self.selectedSegmentIndex)
+                let widthToEndOfSelectedSegment =  self.segmentWidth * CGFloat(self.selectedSegmentIndex) + self.segmentWidth
+                
+                let x = (widthToEndOfSelectedSegment - widthToStatrtOfSelectedSegment) * 0.5 + widthToStatrtOfSelectedSegment - sectionWidth * 0.5 + self.selectionIndicatorEdgeInsets.left
+                
+                return CGRect(x: x, y: indicatorYOffset, width: sectionWidth - self.selectionIndicatorEdgeInsets.right, height: self.selectionIndicatorHeight)
+                
+            }else{
+
+                if self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleDynamic{
+                    
+                    var offsetX:CGFloat = 0
+                    for (i, width) in self.segmentWidthsArray.enumerated() {
+                        if self.selectedSegmentIndex == i {break}
+                        offsetX += width
+                    }
+                    
+                    return CGRect(x: offsetX + self.selectionIndicatorEdgeInsets.left, y: indicatorYOffset, width: self.segmentWidthsArray[self.selectedSegmentIndex] - self.selectionIndicatorEdgeInsets.right, height: self.selectionIndicatorHeight)
+                    
+                }else{
+
+                     return CGRect(x: (self.segmentWidth + self.selectionIndicatorEdgeInsets.left) * CGFloat(self.selectedSegmentIndex), y: indicatorYOffset, width: self.segmentWidth - self.selectionIndicatorEdgeInsets.right, height: self.selectionIndicatorHeight)
+                }
+
+            }
+
+        }
+        
+    }
   
     
+    // MARK:计算箭头的位置
+    func setArrowFrame(){
+        self.selectionIndicatorArrowLayer.frame = self.frameForSelectionIndicator()
+        let arrowLayer = CAShapeLayer()
+        // 获取一个矩形位置
+        arrowLayer.frame = self.selectionIndicatorArrowLayer.bounds
+
+        self.selectionIndicatorArrowLayer.mask = arrowLayer
+        
+        
+        var pointOne:CGPoint = CGPoint.zero
+        var pointTwo:CGPoint = CGPoint.zero
+        var pointThree:CGPoint = CGPoint.zero
+        
+        if self.selectionIndicatorLocation == .MLSegmentedControlSelectionIndicatorLocationUp{
+         pointOne = CGPoint(x: self.selectionIndicatorArrowLayer.frame.width * 0.5, y: self.selectionIndicatorArrowLayer.frame.height)
+         pointTwo = CGPoint(x: self.selectionIndicatorArrowLayer.frame.width, y: 0)
+         pointThree = CGPoint(x: 0, y: 0)
+        }
+        
+        
+        if self.selectionIndicatorLocation == .MLSegmentedControlSelectionIndicatorLocationDown{
+            pointOne = CGPoint(x: self.selectionIndicatorArrowLayer.frame.width * 0.5, y: 0)
+            pointTwo = CGPoint(x: 0, y: self.selectionIndicatorArrowLayer.frame.height)
+            pointThree = CGPoint(x: self.selectionIndicatorArrowLayer.frame.width, y: self.selectionIndicatorArrowLayer.frame.height)
+        }
+
+        let path = UIBezierPath()
+        path.move(to: pointOne)
+        path.addLine(to: pointTwo)
+        path.addLine(to: pointThree)
+        path.close()
+        
+        arrowLayer.path = path.cgPath
+
+    }
     
     
-    
+    // MARK:计算BOX位置
+    func frameForFillerSelectionIndicator() -> CGRect {
+
+        if self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleDynamic {
+            
+            var offsetX:CGFloat = 0
+            for (i, width) in self.segmentWidthsArray.enumerated() {
+                if self.selectedSegmentIndex == i  {break}
+                offsetX += width
+            }
+
+            return CGRect(x: offsetX, y: 0, width: self.segmentWidthsArray[self.selectedSegmentIndex], height: self.frame.height)
+        }else{
+            
+            return CGRect(x: self.segmentWidth * CGFloat(self.selectedSegmentIndex), y: 0, width: self.segmentWidth, height: self.frame.height)
+            
+        }
+        
+    }
+
+
 }
