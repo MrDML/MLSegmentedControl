@@ -291,11 +291,7 @@ open class MLSegmentedControl: UIControl {
         initialize()
     }
 
-    
-    
-    
-    
-    
+
     public convenience init(sectionForImages sectionImages:Array<UIImage>,sectionSelectImages selectImages:Array<UIImage> ) {
          self.init(frame: CGRect.zero, sectionsTitles: nil, sectionForImages: sectionImages, sectionSelectImages: selectImages)
         self.type = .MLSegmentedControlTypeImages
@@ -307,10 +303,10 @@ open class MLSegmentedControl: UIControl {
     }
     
     
-    public convenience init?(sectionsTitles sectiontitles:Array<String>,sectionForImages sectionImages:Array<UIImage>,sectionSelectImages selectImages:Array<UIImage>) {
-        if sectiontitles.count != selectImages.count {
-            return nil;
-        }
+    public convenience init(sectionsTitles sectiontitles:Array<String>,sectionForImages sectionImages:Array<UIImage>,sectionSelectImages selectImages:Array<UIImage>) {
+      
+        assert(sectiontitles.count != selectImages.count, "sectiontitles not equal to the selectImages！")
+        
         self.init(frame: CGRect.zero, sectionsTitles: sectiontitles, sectionForImages: sectionImages, sectionSelectImages: selectImages)
         
         self.type = .MLSegmentedControlTypeTextImages
@@ -338,11 +334,7 @@ open class MLSegmentedControl: UIControl {
         }else{
             self.sectionSelectImages = Array.init(repeating: UIImage(), count: 1)
         }
-        
-        
-        
-        
-       
+
         super.init(frame: frame)
         defaultValue()
         initialize()
@@ -505,31 +497,13 @@ open class MLSegmentedControl: UIControl {
         }
         
        
-      // 添加 其他附件视图
-       
-        if self.selectedSegmentIndex != MLSegmentedControlNoSegment.NoSelectSegment.rawValue {
-
-            if self.selectionIndicatorStripLayer.superlayer == nil {
-               
-                self.scrollView.layer.addSublayer(self.selectionIndicatorStripLayer)
-                self.selectionIndicatorStripLayer.frame = self.frameForSelectionIndicator()
-                
-                if self.selectionStyle == .MLHMSegmentedControlSelectionStyleBox && self.selectionIndicatorBoxLayer.superlayer == nil{
-                    
-                    self.scrollView.layer.insertSublayer(self.selectionIndicatorBoxLayer, at: 0)
-                    self.selectionIndicatorBoxLayer.frame = self.frameForFillerSelectionIndicator()
-                }
-                
-                
-            }else if self.selectionIndicatorArrowLayer.superlayer == nil {
-            
-                self.scrollView.layer.addSublayer(self.selectionIndicatorArrowLayer)
-                self.setArrowFrame()
-  
-            }
-
-        }
+        
+      // 添加 其他附件视图 底部指示线/箭头/box
+        self.configAttachmentView()
     }
+    
+    
+    
     
     
     
@@ -632,6 +606,7 @@ open class MLSegmentedControl: UIControl {
     
  
     
+
     
     
     
@@ -663,6 +638,34 @@ open class MLSegmentedControl: UIControl {
       
         return size
     }
+    
+    
+    
+    // MARK:配置附件视图（底部指示线/箭头/Box）
+    func configAttachmentView(){
+        if self.selectedSegmentIndex != MLSegmentedControlNoSegment.NoSelectSegment.rawValue {
+            
+            if self.selectionIndicatorStripLayer.superlayer == nil {
+                
+                self.scrollView.layer.addSublayer(self.selectionIndicatorStripLayer)
+                self.selectionIndicatorStripLayer.frame = self.frameForSelectionIndicator()
+                
+                if self.selectionStyle == .MLHMSegmentedControlSelectionStyleBox && self.selectionIndicatorBoxLayer.superlayer == nil{
+                    
+                    self.scrollView.layer.insertSublayer(self.selectionIndicatorBoxLayer, at: 0)
+                    self.selectionIndicatorBoxLayer.frame = self.frameForFillerSelectionIndicator()
+                }
+
+            }else if self.selectionIndicatorArrowLayer.superlayer == nil {
+                
+                self.scrollView.layer.addSublayer(self.selectionIndicatorArrowLayer)
+                self.setArrowFrame()
+                
+            }
+            
+        }
+    }
+    
     
     
     
@@ -890,11 +893,11 @@ open class MLSegmentedControl: UIControl {
     //MARK: 设置索引
     
     func setSelectedSegmentIndex(index:Int){
-        
+        self.setSelectedSegmentIndex(index: index, animation: false, notify: false)
     }
     
     func setSelectedSegmentIndex(index:Int,animation:Bool){
-        
+        self.setSelectedSegmentIndex(index: index, animation: animation, notify: false)
     }
     
     func setSelectedSegmentIndex(index:Int,animation:Bool,notify:Bool){
@@ -907,11 +910,61 @@ open class MLSegmentedControl: UIControl {
         }else{
             self.scrollToSelectedSegmentIndex(animation: animation)
             
-           
-            
-            
-            
-            
+            if animation == true {
+
+                if self.selectionStyle == .MLSegmentedControlSelectionStyleArrow{
+                    if self.selectionIndicatorArrowLayer.superlayer == nil {
+                        self.scrollView.layer.addSublayer(self.selectionIndicatorArrowLayer)
+                        self.setSelectedSegmentIndex(index: index, animation: false, notify: false)
+                        return
+                    }
+                }else{
+                    
+                    if self.selectionIndicatorStripLayer.superlayer == nil {
+                        self.scrollView.layer.addSublayer(self.selectionIndicatorStripLayer)
+                        self.setSelectedSegmentIndex(index: index, animation: false, notify: false)
+                        return
+                    }
+                    
+                    if selectionStyle == .MLHMSegmentedControlSelectionStyleBox {
+                        if self.selectionIndicatorBoxLayer.superlayer == nil{
+                            self.scrollView.layer.insertSublayer(self.selectionIndicatorBoxLayer, at: 0)
+                            self.setSelectedSegmentIndex(index: index, animation: false, notify: false)
+                            return
+                        }
+                       
+                    }
+
+                }
+                
+                // 还原/恢复隐式动画
+                self.selectionIndicatorStripLayer.actions = nil
+                self.selectionIndicatorArrowLayer.actions = nil
+                self.selectionIndicatorBoxLayer.actions = nil
+                
+                
+                CATransaction.begin()
+                CATransaction.setAnimationDuration(0.4)
+                // 线性动画，渐出动画
+                CATransaction.setAnimationTimingFunction(CAMediaTimingFunction.init(name: kCAMediaTimingFunctionLinear))
+                self.selectionIndicatorStripLayer.frame = self.frameForSelectionIndicator()
+                self.setArrowFrame()
+                selectionIndicatorBoxLayer.frame = self.frameForFillerSelectionIndicator()
+                CATransaction.commit()
+   
+            }else{
+                
+                // 禁用隐式动画，防止系统使用默认的方法执行动画
+                let actions = ["postion":NSNull(),"bounds":NSNull()]
+                self.selectionIndicatorBoxLayer.actions = actions
+                self.selectionIndicatorArrowLayer.actions = actions
+                self.selectionIndicatorStripLayer.actions = actions
+                self.selectionIndicatorStripLayer.frame = self.frameForSelectionIndicator()
+                self.setArrowFrame()
+                selectionIndicatorBoxLayer.frame = self.frameForFillerSelectionIndicator()
+                
+            }
+
         }
     }
     
@@ -935,8 +988,7 @@ open class MLSegmentedControl: UIControl {
             
             selectedSegmentOffset = self.frame.width * 0.5 - self.segmentWidthsArray[self.selectedSegmentIndex] * 0.5
         }
-       
-        
+
         var scrollRect = rectForSelectedIndex
         scrollRect.origin.x -= selectedSegmentOffset
         scrollRect.size.width += selectedSegmentOffset * 2
