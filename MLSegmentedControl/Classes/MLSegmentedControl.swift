@@ -280,6 +280,12 @@ open class MLSegmentedControl: UIControl {
     public var touchEnabled: Bool = true
     
     
+    // MARK: 普通标题设置(font,color)
+    public var normalTitleTextAttributes:[NSAttributedStringKey: Any]?
+    
+    // MARK: 选中标题设置(font,color)
+    public var selectedTitleTextAttributes:[NSAttributedStringKey: Any]?
+    
     
     public convenience init(sectionsTitles sectiontitles:Array<String>){
         
@@ -637,6 +643,58 @@ open class MLSegmentedControl: UIControl {
         }
       
         return size
+    }
+    
+    
+    
+    //MARK: 转换AttributedString
+    func textLayerAttributedStringForIndex(index:Int) -> NSAttributedString{
+       
+        
+        let selected:Bool = self.selectedSegmentIndex == index ?true :false
+        
+        
+         let title = self.sectionsTitles[index]
+        
+        var attributes:[NSAttributedStringKey:Any]? = nil
+        if selected == true {
+           
+        }else{
+             attributes = self.resultingTitleTextAttributes()
+        }
+    
+         let attributedString = NSAttributedString.init(string: title, attributes:attributes)
+        
+        return  attributedString
+    }
+    
+    
+    
+    // MARK:SelectSegment
+    func resultingTitleTextAttributes() -> [NSAttributedStringKey:Any] {
+        
+        var defaultDicts:[NSAttributedStringKey:Any] = [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 15),NSAttributedStringKey.foregroundColor:UIColor.yellow];
+        if let normalAttributes = self.normalTitleTextAttributes {
+           defaultDicts = defaultDicts.merging(normalAttributes) { (_, new) in
+            print(new)
+            return new}
+        }
+          return defaultDicts
+    }
+    
+    
+    func resultingSelectedTitleTextAttributes() -> [NSAttributedStringKey:Any] {
+        
+        
+        
+        
+        var defaultDicts:[NSAttributedStringKey:Any] = [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 15),NSAttributedStringKey.foregroundColor:UIColor.yellow];
+        if let normalAttributes = self.normalTitleTextAttributes {
+            defaultDicts = defaultDicts.merging(normalAttributes) { (_, new) in
+                print(new)
+                return new}
+        }
+        return defaultDicts
     }
     
     
