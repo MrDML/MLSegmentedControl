@@ -35,7 +35,7 @@ class ViewController: UIViewController {
 //        }
         segmentedControl.frame = CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 40)
         segmentedControl.segmentWidthStyle = .MLSegmentedControlSegmentWidthStyleFixed
-//        segmentedControl.selectionStyle = .MLHMSegmentedControlSelectionStyleBox
+        segmentedControl.selectionStyle = .MLHMSegmentedControlSelectionStyleBox
 //        segmentedControl?.type =
 //        segmentedControl.borderColor
         segmentedControl.shouldStretchSegmentsToScreenSize = true

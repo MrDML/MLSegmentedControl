@@ -355,7 +355,7 @@ open class MLSegmentedControl: UIControl {
     
     // 设置默认值
     func defaultValue(){
-        self.backgroundColorSegment = UIColor.red
+        self.backgroundColorSegment = UIColor.clear
     }
 
     // MARK:布局子视图方法
@@ -590,10 +590,10 @@ open class MLSegmentedControl: UIControl {
             let titleLayer = CATextLayer.init()
             titleLayer.frame = rectReslut
             titleLayer.contentsScale = UIScreen.main.scale
-            let str = NSAttributedString.init(string: self.sectionsTitles[i], attributes: [NSAttributedStringKey.foregroundColor : UIColor.blue,NSAttributedStringKey.font: UIFont.systemFont(ofSize: 19)])
-            titleLayer.string = str;
+            
+            titleLayer.string = self.textLayerAttributedStringForIndex(index: i);
             titleLayer.alignmentMode = kCAAlignmentCenter
-            titleLayer.backgroundColor = UIColor.yellow.cgColor
+//            titleLayer.backgroundColor = UIColor.yellow.cgColor
             self.scrollView.layer.addSublayer(titleLayer)
             // 添加分割线
             if self.verticalDividerEnabled == true && i > 0{
@@ -658,7 +658,7 @@ open class MLSegmentedControl: UIControl {
         
         var attributes:[NSAttributedStringKey:Any]? = nil
         if selected == true {
-           
+             attributes = self.resultingSelectedTitleTextAttributes()
         }else{
              attributes = self.resultingTitleTextAttributes()
         }
@@ -670,31 +670,25 @@ open class MLSegmentedControl: UIControl {
     
     
     
-    // MARK:SelectSegment
+    // MARK:默认标题设置
     func resultingTitleTextAttributes() -> [NSAttributedStringKey:Any] {
         
-        var defaultDicts:[NSAttributedStringKey:Any] = [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 15),NSAttributedStringKey.foregroundColor:UIColor.yellow];
+        var defaultDicts:[NSAttributedStringKey:Any] = [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 15),NSAttributedStringKey.foregroundColor:UIColor.black]
         if let normalAttributes = self.normalTitleTextAttributes {
-           defaultDicts = defaultDicts.merging(normalAttributes) { (_, new) in
-            print(new)
-            return new}
+           defaultDicts = defaultDicts.merging(normalAttributes) { (_,new) in new}
         }
           return defaultDicts
     }
     
-    
+    // MARK:选中标题设置
     func resultingSelectedTitleTextAttributes() -> [NSAttributedStringKey:Any] {
-        
-        
-        
-        
-        var defaultDicts:[NSAttributedStringKey:Any] = [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 15),NSAttributedStringKey.foregroundColor:UIColor.yellow];
-        if let normalAttributes = self.normalTitleTextAttributes {
-            defaultDicts = defaultDicts.merging(normalAttributes) { (_, new) in
-                print(new)
-                return new}
+        var selectDicts = self.resultingTitleTextAttributes()
+        self.selectedTitleTextAttributes = [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 15),NSAttributedStringKey.foregroundColor:UIColor.red]
+        if let selectedAttributes = self.selectedTitleTextAttributes {
+            
+           selectDicts = selectDicts.merging(selectedAttributes) { (_, new) in new}
         }
-        return defaultDicts
+        return selectDicts
     }
     
     
