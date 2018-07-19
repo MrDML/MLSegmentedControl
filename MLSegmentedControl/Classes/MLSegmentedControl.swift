@@ -286,6 +286,9 @@ open class MLSegmentedControl: UIControl {
     // MARK: 选中标题设置(font,color)
     public var selectedTitleTextAttributes:[NSAttributedStringKey: Any]?
     
+    // MARK: 图片和文字的间距
+    public var textImageSpacing:CGFloat = 0;
+    
     
     public convenience init(sectionsTitles sectiontitles:Array<String>){
         
@@ -327,18 +330,18 @@ open class MLSegmentedControl: UIControl {
         if sectiontitles != nil {
             self.sectionsTitles = sectiontitles!
         }else{
-            self.sectionsTitles = Array.init(repeating: String(), count: 1)
+            self.sectionsTitles = Array()
         }
         
         if sectionImages != nil {
              self.sectionImages = sectionImages!
         }else{
-            self.sectionImages = Array.init(repeating: UIImage(), count: 1)
+            self.sectionImages = Array()
         }
         if selectImages != nil {
              self.sectionSelectImages = selectImages!
         }else{
-            self.sectionSelectImages = Array.init(repeating: UIImage(), count: 1)
+            self.sectionSelectImages = Array()
         }
 
         super.init(frame: frame)
@@ -355,7 +358,7 @@ open class MLSegmentedControl: UIControl {
     
     // 设置默认值
     func defaultValue(){
-        self.backgroundColorSegment = UIColor.clear
+        self.backgroundColorSegment = UIColor.red
     }
 
     // MARK:布局子视图方法
@@ -439,17 +442,68 @@ open class MLSegmentedControl: UIControl {
             self.segmentWidthsArray = mutableSegmentWidths
 
         }else if self.type == .MLSegmentedControlTypeImages{
-            
-            // TODO:do somthing
-            
-        }else if self.type == .MLSegmentedControlTypeImages && self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleFixed{
-            
-            // TODO:do somthing
+
+            for (_, image) in self.sectionImages.enumerated() {
+               let imageSizeWidth = image.size.width + self.segmentEdgeInset.left + self.segmentEdgeInset.right;
+                self.segmentWidth = max(imageSizeWidth, self.segmentWidth)
+            }
+
+        }else if self.type == .MLSegmentedControlTypeTextImages && self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleFixed{
+
+            if self.imagePosition == .MLSegmentedControlImagePositionLeftOfText || self.imagePosition == .MLSegmentedControlImagePositionRightOfText{
+                
+                for (index, _) in self.sectionsTitles.enumerated() {
+                    let  image = self.sectionImages[index];
+                   let stringWidth = self.calculateTitleSizeAtIndex(index: index).width
+                   let imageWidth = image.size.width
+                    let totalWidth = stringWidth + imageWidth + self.textImageSpacing + self.segmentEdgeInset.left + self.segmentEdgeInset.right
+                    self.segmentWidth = max(self.segmentWidth, totalWidth)
+                }
+
+            }else{
+                for (index, _) in self.sectionsTitles.enumerated() {
+                    let stringWidth = self.calculateTitleSizeAtIndex(index: index).width + self.segmentEdgeInset.left + self.segmentEdgeInset.right
+                    self.segmentWidth = max(self.segmentWidth, stringWidth)
+                }
+                
+            }
             
         }else if self.type == .MLSegmentedControlTypeTextImages && self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleDynamic{
             
+            var mutableSegmentWidths:Array<CGFloat> = Array()
+            var totalWidth:CGFloat = 0
+
+            for (index,_) in self.sectionsTitles.enumerated(){
+                
+                 let image = self.sectionImages[index]
+                 let stringWidth = self.calculateTitleSizeAtIndex(index: index).width + self.enlargeEdgeInset.right
+                 let imageWidth  = image.size.width + self.segmentEdgeInset.left
+                
+                var composeWidth:CGFloat = 0
+                if self.imagePosition == .MLSegmentedControlImagePositionLeftOfText || self.imagePosition == .MLSegmentedControlImagePositionRightOfText{
+                     composeWidth = stringWidth + imageWidth
+                }else{
+                    composeWidth = max(stringWidth, imageWidth)
+                }
+                  totalWidth += composeWidth
+                  mutableSegmentWidths.append(composeWidth)
+            }
             
-            // TODO:do somthing
+
+            if self.shouldStretchSegmentsToScreenSize == true && totalWidth < UIScreen.main.bounds.width{
+                let margeWidth = UIScreen.main.bounds.width - totalWidth
+                
+                let deuceMargeWidth = CGFloat(roundf(Float(margeWidth / CGFloat(self.sectionsTitles.count))))
+                
+                for (i,width) in mutableSegmentWidths.enumerated(){
+                    
+                    let newWidth = width + deuceMargeWidth
+                    
+                    mutableSegmentWidths[i] = newWidth
+                }
+                
+            }
+            self.segmentWidthsArray = mutableSegmentWidths
         }
 
         self.scrollView.isScrollEnabled = true
@@ -461,12 +515,7 @@ open class MLSegmentedControl: UIControl {
     func totalSegmentedControlWidth() -> CGFloat {
         
         if self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleDynamic {
-            
            return self.segmentWidthsArray.reduce(0) {$0 + $1}
-            // FIXME:闭包计算总长度的写法 删
-//         return self.segmentWidthsArray.reduce(0) { (a, b) -> CGFloat in
-//                return a + b
-//            }
         }else{
             return CGFloat(self.sectionsTitles.count) * self.segmentWidth;
         }
@@ -496,16 +545,194 @@ open class MLSegmentedControl: UIControl {
             loadSegmentedControlTypeText(rect: rect)
             break
         case .MLSegmentedControlTypeImages:
+             loadSegmentedControltypeImage(rect: rect)
             break
         case .MLSegmentedControlTypeTextImages:
-            loadSegmentedControlTypeText(rect: rect)
+            loadSegmentedControltypeTextImage(rect: rect)
             break
         }
-        
-       
-        
+
       // 添加 其他附件视图 底部指示线/箭头/box
         self.configAttachmentView()
+    }
+    
+    
+    // MARK: 加载文本和图片类型
+    func loadSegmentedControltypeTextImage(rect:CGRect){
+        
+        for (index, _) in self.sectionsTitles.enumerated() {
+            
+            let stringSize = self.calculateTitleSizeAtIndex(index: index)
+            let image       = self.sectionImages[index]
+            
+            let stringHeight = stringSize.width
+            let stringWidth = stringSize.height
+            let imageWidth = image.size.width
+            let imageHeight = image.size.height
+            
+            var imageOffsetX = self.segmentWidth * CGFloat(index)
+            var textOffsetX = self.segmentWidth * CGFloat(index)
+            var imageOffsetY = CGFloat(ceilf(Float((self.frame.height -  imageHeight) * 0.5 )))
+            var textOffsetY = CGFloat(ceilf(Float((self.frame.height -  stringHeight) * 0.5 )))
+            
+            if self.segmentWidthStyle == .MLSegmentedControlSegmentWidthStyleFixed{
+                
+                
+                let isHorizontalShow = (self.imagePosition == .MLSegmentedControlImagePositionLeftOfText || self.imagePosition == .MLSegmentedControlImagePositionRightOfText) ? true : false
+                
+                if isHorizontalShow == true{
+                    
+                    let whitespace:CGFloat = self.segmentWidth - imageWidth - self.textImageSpacing - stringWidth
+                    
+                    if self.imagePosition == .MLSegmentedControlImagePositionLeftOfText{
+                        imageOffsetX += CGFloat(ceilf(Float(whitespace * 0.5)))
+                        textOffsetX = imageOffsetX + imageWidth + self.textImageSpacing
+                    }else{
+                        textOffsetX += CGFloat(ceilf(Float(whitespace * 0.5)))
+                        imageOffsetX = textOffsetX + stringWidth + self.textImageSpacing
+                    }
+
+                }else{
+                    
+                    imageOffsetX = self.segmentWidth * CGFloat(index) + (self.frame.width - imageWidth) * 0.5
+                    textOffsetX = self.segmentWidth * CGFloat(index) + (self.frame.width - stringWidth) * 0.5
+                     let whitespace:CGFloat = self.frame.height - imageHeight - self.textImageSpacing - stringHeight
+                    if self.imagePosition == .MLSegmentedControlImagePositionAboveText{
+                       
+                        imageOffsetY =  CGFloat(ceilf(Float(whitespace * 0.5)))
+                        textOffsetY = imageOffsetY + imageHeight + self.textImageSpacing
+                    
+                    }else{
+                        textOffsetY = CGFloat(ceilf(Float(whitespace * 0.5)))
+                        imageOffsetY = textOffsetY + stringHeight + self.textImageSpacing
+                    }
+
+                }
+                
+            }else{
+                
+                 let isHorizontalShow = (self.imagePosition == .MLSegmentedControlImagePositionLeftOfText || self.imagePosition == .MLSegmentedControlImagePositionRightOfText) ? true : false
+                
+                var offsetX:CGFloat = 0
+                var currentIndex:Int = 0
+                for (i, width) in self.segmentWidthsArray.enumerated(){
+                    currentIndex = i;
+                    if index == i {break}
+                    offsetX  += width
+                }
+                if isHorizontalShow == true{
+  
+                    if self.imagePosition == .MLSegmentedControlImagePositionLeftOfText{
+                        imageOffsetX = offsetX
+                        textOffsetX  = offsetX + imageWidth + self.textImageSpacing
+                        
+                    }else{
+                        textOffsetX = offsetX
+                        imageOffsetX = offsetX + stringWidth + self.textImageSpacing
+                    }
+                    
+                }else{
+                    
+                     imageOffsetX = offsetX + (self.segmentWidthsArray[currentIndex] - imageWidth) * 0.5
+                     textOffsetX = offsetX + (self.segmentWidthsArray[currentIndex] - stringWidth) * 0.5
+                    let whiteSpace = self.frame.height - imageHeight - self.textImageSpacing - stringHeight
+                    if self.imagePosition == .MLSegmentedControlImagePositionAboveText{
+                         imageOffsetY =  CGFloat(ceilf(Float(whiteSpace * 0.5)))
+                         textOffsetY = imageOffsetY + imageHeight + self.textImageSpacing
+                    }else{
+                        textOffsetY = CGFloat(ceilf(Float(whiteSpace * 0.5)))
+                        imageOffsetY = textOffsetY + stringHeight + self.textImageSpacing
+                    }
+  
+                }
+
+            }
+            
+            
+            let imageRect = CGRect(x: imageOffsetX, y: imageOffsetY, width: imageWidth, height: imageHeight)
+            let textRect = CGRect(x: textOffsetX, y: textOffsetY, width: stringWidth, height: stringHeight)
+            
+            
+            
+             let textLayer = CATextLayer()
+             textLayer.string = self.textLayerAttributedStringForIndex(index: index)
+            textLayer.frame = textRect
+            textLayer.contentsScale = UIScreen.main.scale
+            textLayer.alignmentMode = kCAAlignmentCenter
+            self.scrollView.layer.addSublayer(textLayer)
+            
+            let imageLayer = CALayer()
+            let selected = self.selectedSegmentIndex == index ? true : false
+            if selected == true{
+                imageLayer.contents = self.sectionSelectImages[index].cgImage
+            }else{
+                imageLayer.contents = self.sectionImages[index].cgImage
+            }
+            imageLayer.frame = imageRect
+            self.scrollView.layer.addSublayer(imageLayer)
+            
+            self.addBackgroundAndBorderLayerWithRect(rect: imageRect)
+            
+        }
+        
+        
+        
+    }
+    
+    
+    
+    
+    // MARK: 加载图片类型
+    func loadSegmentedControltypeImage(rect:CGRect){
+        
+        
+        for (index, image) in self.sectionImages.enumerated() {
+            
+            let imageWidth = image.size.width
+            let imageHeight = image.size.height
+            
+            let locationUp = self.selectionIndicatorLocation == .MLSegmentedControlSelectionIndicatorLocationUp
+            let locationUpValue = CGFloat(locationUp.hashValue)
+            
+            let y = (self.frame.height - self.selectionIndicatorHeight)  * 0.5 - imageHeight * 0.5 + locationUpValue * selectionIndicatorHeight
+            
+            let x = self.segmentWidth * CGFloat(index) + (self.segmentWidth - imageWidth) * 0.5
+            
+            
+            
+            let resultRect = CGRect(x: x, y: y, width: imageWidth, height: imageHeight)
+            let rectDiv:CGRect = CGRect(x: x, y: y, width: self.verticalDividerWidth, height: imageHeight)
+            
+            let imageLayer = CALayer()
+            imageLayer.frame = resultRect
+            
+            if self.sectionSelectImages.count > 0{
+                if self.selectedSegmentIndex == index {
+                    let selectImage = self.sectionSelectImages[index]
+                    imageLayer.contents = selectImage.cgImage
+                }else{
+                    imageLayer.contents = image.cgImage
+                }
+            }else{
+                imageLayer.contents = image.cgImage
+            }
+            
+            
+            
+            self.scrollView.layer.addSublayer(imageLayer)
+            
+            // 添加分割线
+            if self.verticalDividerEnabled == true && index > 0{
+                let verticalDividerLayer = CALayer.init()
+                verticalDividerLayer.backgroundColor = self.verticalDividerColor.cgColor
+                verticalDividerLayer.frame = rectDiv
+                self.scrollView.layer.addSublayer(verticalDividerLayer)
+            }
+            
+            self.addBackgroundAndBorderLayerWithRect(rect: resultRect)
+            
+        }
+
     }
     
     
@@ -513,7 +740,7 @@ open class MLSegmentedControl: UIControl {
     
     
     
-    /// 加载文本类型
+    /// MARK: 加载文本类型
     func loadSegmentedControlTypeText(rect:CGRect){
     
     
@@ -588,12 +815,11 @@ open class MLSegmentedControl: UIControl {
             
             // 添加文字
             let titleLayer = CATextLayer.init()
+            titleLayer.string = self.textLayerAttributedStringForIndex(index: i);
             titleLayer.frame = rectReslut
             titleLayer.contentsScale = UIScreen.main.scale
-            
-            titleLayer.string = self.textLayerAttributedStringForIndex(index: i);
             titleLayer.alignmentMode = kCAAlignmentCenter
-//            titleLayer.backgroundColor = UIColor.yellow.cgColor
+            titleLayer.backgroundColor = UIColor.yellow.cgColor
             self.scrollView.layer.addSublayer(titleLayer)
             // 添加分割线
             if self.verticalDividerEnabled == true && i > 0{
@@ -632,7 +858,7 @@ open class MLSegmentedControl: UIControl {
         if (!title.isEmpty && self.titleFormatterBlock == nil) {
             
             let title:NSString = title as NSString
-            size =  title.boundingRect(with: CGSize.init(width: CGFloat(MAXFLOAT), height: CGFloat(MAXFLOAT)), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font : UIFont .systemFont(ofSize: 19)], context: nil).size
+            size =  title.boundingRect(with: CGSize.init(width: CGFloat(MAXFLOAT), height: CGFloat(MAXFLOAT)), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: selected ?self.resultingSelectedTitleTextAttributes():self.resultingTitleTextAttributes(), context: nil).size
  
         }else if (!title.isEmpty && self.titleFormatterBlock != nil){
         
