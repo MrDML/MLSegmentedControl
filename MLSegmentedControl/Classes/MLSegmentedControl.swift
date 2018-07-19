@@ -314,7 +314,7 @@ open class MLSegmentedControl: UIControl {
     
     public convenience init(sectionsTitles sectiontitles:Array<String>,sectionForImages sectionImages:Array<UIImage>,sectionSelectImages selectImages:Array<UIImage>) {
       
-        assert(sectiontitles.count != selectImages.count, "sectiontitles not equal to the selectImages！")
+        assert((sectiontitles.count == selectImages.count) ? true : false, "sectiontitles not equal to the selectImages！")
         
         self.init(frame: CGRect.zero, sectionsTitles: sectiontitles, sectionForImages: sectionImages, sectionSelectImages: selectImages)
         
@@ -391,6 +391,15 @@ open class MLSegmentedControl: UIControl {
         
     }
     
+    func sectionCount() ->Int{
+    
+        if self.type == .MLSegmentedControlTypeText {
+            return self.sectionsTitles.count
+        }else{
+            return self.sectionImages.count
+        }
+    }
+    
     // MARK: 更新视图位置
     func updateSegmentsRects(){
         
@@ -398,8 +407,9 @@ open class MLSegmentedControl: UIControl {
         self.scrollView.contentInset = UIEdgeInsets.zero
         self.scrollView.frame = CGRect.init(x: 0, y: 0, width: self.frame.size.width, height: self.frame.size.height)
         
-        if self.sectionsTitles.count > 0 {
-            self.segmentWidth = self.frame.size.width  / CGFloat(self.sectionsTitles.count)
+        
+        if self.sectionCount() > 0 {
+            self.segmentWidth = self.frame.size.width  / CGFloat(self.sectionCount())
         }
         
         
@@ -701,7 +711,7 @@ open class MLSegmentedControl: UIControl {
             
             
             let resultRect = CGRect(x: x, y: y, width: imageWidth, height: imageHeight)
-            let rectDiv:CGRect = CGRect(x: x, y: y, width: self.verticalDividerWidth, height: imageHeight)
+            let rectDiv:CGRect = CGRect(x: (self.segmentWidth * CGFloat(index)) - self.verticalDividerWidth * 0.5, y: y, width: self.verticalDividerWidth, height: imageHeight)
             
             let imageLayer = CALayer()
             imageLayer.frame = resultRect

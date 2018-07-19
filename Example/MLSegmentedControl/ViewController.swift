@@ -16,16 +16,22 @@ class ViewController: UIViewController {
 //       exampleDemo()
         
         
-       exampleDemo2()
-      
+//       exampleDemo2()
+      exampleDemo3()
     }
-
+    func  exampleDemo3(){
+         let image =  (UIImage.init(named: "1-selected"))!
+        let images:Array<UIImage> = [image,image,image]
+         let segmentedControl = MLSegmentedControl.init(sectionsTitles: ["one","two","three"], sectionForImages: images, sectionSelectImages: images)
+         segmentedControl.frame = CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 40)
+         self.view.addSubview(segmentedControl)
+    }
     
     
     func  exampleDemo2(){
         let image =  (UIImage.init(named: "1-selected"))!
        
-        let images:Array<UIImage> = [image,image,image,image,image]
+        let images:Array<UIImage> = [image,image,image]
        let segmentedControl = MLSegmentedControl.init(sectionForImages: images, sectionSelectImages: images)
        segmentedControl.frame = CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 40)
 //                segmentedControl.segmentWidthStyle = .MLSegmentedControlSegmentWidthStyleFixed
