@@ -20,16 +20,20 @@ class ViewController: UIViewController {
       exampleDemo3()
     }
     func  exampleDemo3(){
-         let image =  (UIImage.init(named: "1-selected"))!
-        let images:Array<UIImage> = [image,image,image]
-         let segmentedControl = MLSegmentedControl.init(sectionsTitles: ["one","two","three"], sectionForImages: images, sectionSelectImages: images)
+         let image =  (UIImage.init(named: "01"))!
+        let images:Array<UIImage> = [image,image,image,image,image,image,image]
+         let segmentedControl = MLSegmentedControl.init(sectionsTitles: ["one","two","three","four","five","six","seven"], sectionForImages: images, sectionSelectImages: images)
          segmentedControl.frame = CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 40)
+        segmentedControl.borderType = .None
+        segmentedControl.textImageSpacing = 10
+        segmentedControl.imagePosition = .MLSegmentedControlImagePositionRightOfText
+//        segmentedControl.segmentWidthStyle = .MLSegmentedControlSegmentWidthStyleDynamic
          self.view.addSubview(segmentedControl)
     }
     
     
     func  exampleDemo2(){
-        let image =  (UIImage.init(named: "1-selected"))!
+        let image =  (UIImage.init(named: "01"))!
        
         let images:Array<UIImage> = [image,image,image]
        let segmentedControl = MLSegmentedControl.init(sectionForImages: images, sectionSelectImages: images)
@@ -60,11 +64,11 @@ class ViewController: UIViewController {
         segmentedControl.frame = CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 40)
         segmentedControl.segmentWidthStyle = .MLSegmentedControlSegmentWidthStyleFixed
         segmentedControl.selectionStyle = .MLHMSegmentedControlSelectionStyleBox
-        segmentedControl.selectionIndicatorLocation = .MLSegmentedControlSelectionIndicatorLocationUp
-
+//        segmentedControl.selectionIndicatorLocation = .MLSegmentedControlSelectionIndicatorLocationUp
+        segmentedControl.imagePosition = .MLSegmentedControlImagePositionAboveText
         segmentedControl.shouldStretchSegmentsToScreenSize = true
         segmentedControl.borderType = .None
-        segmentedControl.selectedSegmentIndex = MLSegmentedControlNoSegment.NoSelectSegment.rawValue
+//        segmentedControl.selectedSegmentIndex = MLSegmentedControlNoSegment.NoSelectSegment.rawValue
         self.view.addSubview(segmentedControl)
     }
     
