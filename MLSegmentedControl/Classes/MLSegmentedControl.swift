@@ -204,7 +204,7 @@ open class MLSegmentedControl: UIControl {
 
     
     //MARK: 视图背景颜色
-   public var backgroundColorSegment:UIColor?
+   public var backgroundColorSegment:UIColor? = UIColor.init(red: 242/255.0, green: 242/255.0, blue: 242/255.0, alpha: 1)
     
     
     //MARK: 展现类型
@@ -333,6 +333,9 @@ open class MLSegmentedControl: UIControl {
 
 
     public convenience init(sectionForImages sectionImages:Array<UIImage>,sectionSelectImages selectImages:Array<UIImage> ) {
+        
+        assert((sectionImages.count == selectImages.count) ? true : false, "sectiontitles not equal to the selectImages！")
+        
          self.init(frame: CGRect.zero, sectionsTitles: nil, sectionForImages: sectionImages, sectionSelectImages: selectImages)
         self.type = .image
         self.sectionImages = sectionImages
@@ -345,7 +348,7 @@ open class MLSegmentedControl: UIControl {
     
     public convenience init(sectionsTitles sectiontitles:Array<String>,sectionForImages sectionImages:Array<UIImage>,sectionSelectImages selectImages:Array<UIImage>) {
       
-        assert((sectiontitles.count == sectionImages.count) ? true : false, "sectiontitles not equal to the selectImages！")
+        assert((sectiontitles.count == sectionImages.count && sectiontitles.count == selectImages.count) ? true : false, "sectiontitles not equal to the selectImages！")
         
         self.init(frame: CGRect.zero, sectionsTitles: sectiontitles, sectionForImages: sectionImages, sectionSelectImages: selectImages)
         
@@ -376,7 +379,6 @@ open class MLSegmentedControl: UIControl {
         }
 
         super.init(frame: frame)
-        defaultValue()
         initialize()
     }
     
@@ -392,11 +394,7 @@ open class MLSegmentedControl: UIControl {
         }
     }
     
-    
-    // 设置默认值
-    func defaultValue(){
-        self.backgroundColorSegment = UIColor.init(red: 242/255.0, green: 242/255.0, blue: 242/255.0, alpha: 1)
-    }
+
 
     // MARK:布局子视图方法
     open override func layoutSubviews() {
