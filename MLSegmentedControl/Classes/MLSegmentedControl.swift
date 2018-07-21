@@ -345,7 +345,7 @@ open class MLSegmentedControl: UIControl {
     
     public convenience init(sectionsTitles sectiontitles:Array<String>,sectionForImages sectionImages:Array<UIImage>,sectionSelectImages selectImages:Array<UIImage>) {
       
-        assert((sectiontitles.count == selectImages.count) ? true : false, "sectiontitles not equal to the selectImages！")
+        assert((sectiontitles.count == sectionImages.count) ? true : false, "sectiontitles not equal to the selectImages！")
         
         self.init(frame: CGRect.zero, sectionsTitles: sectiontitles, sectionForImages: sectionImages, sectionSelectImages: selectImages)
         
