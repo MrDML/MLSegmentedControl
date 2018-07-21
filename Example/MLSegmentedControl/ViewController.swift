@@ -9,14 +9,27 @@
 import UIKit
 import MLSegmentedControl
 class ViewController: UIViewController {
+    
+    @IBOutlet weak var tableView: UITableView!
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-       exampleDemoOne()
-       exampleDemoTwo()
-       exampleDemoThree()
+     
+        setTableView()
     }
+    
+    
+    
+    func setTableView(){
+        
+        
+        
+    }
+    
+    
+    
     func  exampleDemoThree(){
 
         var imagesArray:Array<UIImage> = []
@@ -91,4 +104,24 @@ class ViewController: UIViewController {
     
     
 }
+
+//
+//extension ViewController:UITabBarDelegate,UITableViewDataSource {
+//    
+//    func numberOfSections(in tableView: UITableView) -> Int {
+//        return 2
+//    }
+//    
+//    
+//    
+//    
+//}
+
+
+
+
+
+
+
+
 
