@@ -7,33 +7,33 @@
 
 import UIKit
 
-/// 设置类型
+/// Type
 ///
-/// - Text: 文本类型
-/// - Images: 图片类型
-/// - TextImages: 图片文本类型
+/// - Text: TextStyle
+/// - Images: ImagesStyle
+/// - TextImages: TextImagesStyle
 public enum MLSegmentedType: Int {
     case text
     case image
     case textImage
 }
 
-/// 标题宽度：固定/动态
+/// WidthStyle
 ///
-/// - Fixed: 固定
-/// - Dynamic: 动态
+/// - Fixed: FixedWidth
+/// - Dynamic: DynamicWidth
 public enum MLSegmentedWidthStyle: Int {
     case fixed
     case dynamic
 }
 
 
-/// 选中样式
+/// SelectionStyle
 ///
-/// - TextWidthStripe: 线条和文字宽度相等
-/// - FullWidthStripe: 填充整个segment
-/// - SelectionStyleBox: Box样式
-/// - SelectionStyleArrow: 箭头样式
+/// - TextWidthStripe: TextWidthStripeStyle
+/// - FullWidthStripe: FullWidthStripeStyle
+/// - SelectionStyleBox: SelectionStyleBoxStyle
+/// - SelectionStyleArrow: SelectionStyleArrowStyle
 public enum MLSegmentedSelectionStyle:Int {
     // 线条的宽度和文本size相等
     case textWidthStripe
@@ -46,10 +46,10 @@ public enum MLSegmentedSelectionStyle:Int {
 }
 
 
-/// 选中线条位置
+/// Location
 ///
-/// - Up: 在文字上方显示
-/// - Down: 在文字下方显示
+/// - Up: Up
+/// - Down: Down
 /// - None: No
 public enum MLSegmentedSelectionIndicatorLocation:Int {
     case up
@@ -59,8 +59,7 @@ public enum MLSegmentedSelectionIndicatorLocation:Int {
 
 
 
-
-/// 边缘线条位置
+/// BorderType
 public struct MLSegmentedBorderType:OptionSet {
     
     public var rawValue: Int = 0
@@ -83,13 +82,13 @@ public struct MLSegmentedBorderType:OptionSet {
 
 
 
-/// 图片位置
+/// ImagePosition
 ///
-/// - BehindText: 图片在文字的后边
-/// - LeftOfText: 图片在文字的左侧
-/// - RightOfText: 图片在文字的右侧
-/// - AboveText: 图片在文字上方
-/// - BelowText: 图片在文字的下方
+/// - BehindText: ImageBehindText
+/// - LeftOfText: ImageLeftOfText
+/// - RightOfText: ImageRightOfText
+/// - AboveText: ImageAboveText
+/// - BelowText: ImageBelowText
 public enum MLSegmentedImagePosition {
     case behindText
     case leftOfText
@@ -100,9 +99,8 @@ public enum MLSegmentedImagePosition {
 }
 
 
-/// 默认选中索引
-/// 如果选中索引值 NoSelectSegment 为没有选中
-/// - NoSelectSegment: <#NoSelectSegment description#>
+
+/// - NoSelectSegment: NoSelectSegment
 public enum MLSegmentedControlNoSegment:Int {
     case noSelectSegment = -1
 }
@@ -154,20 +152,20 @@ open class MLSegmentedControl: UIControl {
     
     public var titleFormatterClosure:MLTitleFormatterClosure?
     
-    //MARK: 条状线条指示器
+    /// selectionIndicatorStripLayer
     lazy var selectionIndicatorStripLayer: CALayer = {
         let stripLayer = CALayer()
         return stripLayer
         
     }()
     
-    //MARK: 箭头指示器
+    /// selectionIndicatorArrowLayer
     lazy var selectionIndicatorArrowLayer: CALayer = {
         let arrowLayer  = CALayer()
         return arrowLayer
     }()
     
-    //MARK: 矩形盒指示器
+    /// selectionIndicatorBoxLayer
     lazy var selectionIndicatorBoxLayer: CALayer = {
         let  boxLayer  = CALayer()
         return boxLayer
@@ -175,7 +173,7 @@ open class MLSegmentedControl: UIControl {
     
     
     
-    //MARK: 标题数组
+    /// sectionsTitles
    public var sectionsTitles:Array<String>{
         didSet{
             self.updateSegmentsRects()
@@ -184,7 +182,7 @@ open class MLSegmentedControl: UIControl {
         }
     }
     
-    //MARK: 图片名称
+    /// sectionImages
    public var sectionImages:Array<UIImage>{
         didSet{
             self.setNeedsDisplay()  // 调整子视图的布局，下个周期起作用
@@ -192,25 +190,22 @@ open class MLSegmentedControl: UIControl {
         }
     }
     
-    //MARK: 选中图片名称
+    /// sectionSelectImages
    public var sectionSelectImages:Array<UIImage>{
         didSet{
             // TODO:do somthing
         }
     }
     
-    
 
-
-    
-    //MARK: 视图背景颜色
+    /// backgroundColorSegment
    public var backgroundColorSegment:UIColor? = UIColor.init(red: 242/255.0, green: 242/255.0, blue: 242/255.0, alpha: 1)
     
     
-    //MARK: 展现类型
+    /// type
    public var type:MLSegmentedType = .text
     
-    //MARK: 标题的宽度是固定还是动态
+    /// segmentWidthStyle
     public  var segmentWidthStyle:MLSegmentedWidthStyle = .fixed {
         didSet{
             if self.type == .image {
@@ -219,13 +214,13 @@ open class MLSegmentedControl: UIControl {
         }
     }
     
-    //MARK: 选中样式
+    // selectionStyle
    public var selectionStyle:MLSegmentedSelectionStyle = .textWidthStripe
     
 
     
     
-    //MARK: 线条位置
+    /// selectionIndicatorLocation
     public  var selectionIndicatorLocation:MLSegmentedSelectionIndicatorLocation = .down{
         didSet{
             if selectionIndicatorLocation == .none {
@@ -234,89 +229,98 @@ open class MLSegmentedControl: UIControl {
         }
     }
     
-    //MARK: 图片位置
+    /// imagePosition
    public var imagePosition:MLSegmentedImagePosition = .aboveText
 
-    //MARK: 当前选中索引
+    /// selectedSegmentIndex
    public var selectedSegmentIndex = 0
     
-    // MARK: segment 宽度
+    /// segmentWidth
    public var segmentWidth:CGFloat = 0
     
-    // MARK: 底部的指示线条的高度
+    /// selectionIndicatorHeight
    public var selectionIndicatorHeight:CGFloat = 1
 
-    // MARK: segment 宽度数组
+    /// segmentWidthsArray
     lazy var segmentWidthsArray:Array<CGFloat> = {
         let array = Array<CGFloat>()
         return array
     }()
     
     
-    // MARK: 是否填充整个屏幕
+    /// shouldStretchSegmentsToScreenSize
    public var shouldStretchSegmentsToScreenSize:Bool = false
     
-    // MARK: 预留参数，微调标题位置
+    /// segmentEdgeInset
    public var segmentEdgeInset:UIEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 5)
 
-    // MARK: 预留参数 放大点击区域
+    /// enlargeEdgeInset
    public var enlargeEdgeInset:UIEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
     
-    // MARK: 预留参数 扩展选中线条的具体位置
+    /// selectionIndicatorEdgeInsets
     public var selectionIndicatorEdgeInsets:UIEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
     
     
     ///  垂直分割线
     
-    ///MARK: 是否显示分割线
+    /// verticalDividerEnabled
    public var verticalDividerEnabled:Bool = true
     
-    //MARK: 分割线宽
+    /// verticalDividerWidth
    public var verticalDividerWidth:CGFloat = 1
     
-    //MARK: 分割线的颜色
+    /// verticalDividerColor
     public var verticalDividerColor:UIColor = UIColor(red: 247/255.0, green: 116/255.0, blue: 116/255.0, alpha: 1)
     
-    /// 视图边缘线位置
+    /// borderType
     public  var borderType:MLSegmentedBorderType = .right{
         didSet{
             self.setNeedsLayout()
         }
     }
-    //MARK: 视图边缘线颜色
+    /// borderColor
    public var borderColor:UIColor = UIColor.black
+    /// borderWidth
    public var borderWidth:CGFloat = 1
     
-    //MARK: 选中Segment底部线条颜色
+
+    /// selectionIndicatorColor
     public var selectionIndicatorColor:UIColor = UIColor(red: 247/255.0, green: 116/255.0, blue: 116/255.0, alpha: 1)
 
-    // MARK: 选中SegmentBox背景颜色
+
+    /// selectionIndicatorBoxColor
     public var selectionIndicatorBoxColor:UIColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.4)
     
-    // MARK: 是否可以点击默认true
+    /// touchEnabled
     public var touchEnabled: Bool = true
     
+
     
-    // MARK: 普通标题设置(font,color)
+    /// normalTitleTextAttributes
     public var normalTitleTextAttributes:[NSAttributedStringKey: Any]?
     
-    // MARK: 选中标题设置(font,color)
+   
+    /// selectedTitleTextAttributes
     public var selectedTitleTextAttributes:[NSAttributedStringKey: Any]?
     
-    // MARK: 图片和文字的间距
+ 
+    
+    /// textImageSpacing
     public var textImageSpacing:CGFloat = 0;
     
-    // MARK: 设置box透明度
+
+    /// selectionIndicatorBoxOpacity
     public var selectionIndicatorBoxOpacity:Float = 1 {
         didSet{
             self.selectionIndicatorBoxLayer.opacity = selectionIndicatorBoxOpacity
         }
     }
-   // MARK: 选中是否有动画，默认true
+
+    /// shouldAnimateSelection
     public var shouldAnimateSelection:Bool = true
     
     
-  // MARK: 回调方法
+    /// MLSelectionChangeToIndexClosure
     public typealias MLSelectionChangeToIndexClosure = (_ selectionIndex: Int) -> Void
     public var selectionChangeToIndexClosure:MLSelectionChangeToIndexClosure?
     
@@ -327,8 +331,7 @@ open class MLSegmentedControl: UIControl {
         
         self.type = .text
         self.sectionsTitles = sectiontitles
-        
-        initialize()
+
     }
 
 
@@ -340,9 +343,7 @@ open class MLSegmentedControl: UIControl {
         self.type = .image
         self.sectionImages = sectionImages
         self.sectionSelectImages = selectImages
-        
-
-        initialize()
+ 
     }
     
     
@@ -353,7 +354,6 @@ open class MLSegmentedControl: UIControl {
         self.init(frame: CGRect.zero, sectionsTitles: sectiontitles, sectionForImages: sectionImages, sectionSelectImages: selectImages)
         
         self.type = .textImage
-
     }
     
     
@@ -386,17 +386,13 @@ open class MLSegmentedControl: UIControl {
         fatalError("init(coder:) has not been implemented")
     }
     
-   
-    // 调整视图位置
+
     open override var frame: CGRect{
         didSet{
             self.updateSegmentsRects()
         }
     }
-    
 
-
-    // MARK:布局子视图方法
     open override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -410,20 +406,9 @@ open class MLSegmentedControl: UIControl {
     func initialize(){
       self.addSubview(scrollView)
 
-    // https://www.zybuluo.com/fiy-fish/note/589307
-        /**不透明的
-         使用 opaque 可以提高系统的视图绘制性能，当opaque = yes时，系统可以快速高效的绘制视图，这个时候view的alpha一定等于1
-         当view.alpha小于1时，opaque一定要设置为NO,否则会发生意想不到的后果
-         1.opaque默认为YES，此时view.alpha=1
-         2.view,alpha小于1时，opaque一定要设置为NO
-         */
      self.isOpaque = false
-        
-        // 当视图的size 发生变化时 会调用 drawrect 方法
+
      self.contentMode = .redraw
-        
-        
-        
     }
     
     func sectionCount() ->Int{
@@ -435,7 +420,7 @@ open class MLSegmentedControl: UIControl {
         }
     }
     
-    // MARK: 更新视图位置
+    // MARK: updateSegmentsRects
     func updateSegmentsRects(){
         
       
@@ -466,8 +451,6 @@ open class MLSegmentedControl: UIControl {
                 mutableSegmentWidths.append(stringWidth)
             }
             
-            
-         // 动态计算后 总长度有可能小于屏幕的宽度 这里增加一个选项可以一屏幕的宽度来显示
             if self.shouldStretchSegmentsToScreenSize == true && totalWidth < UIScreen.main.bounds.width {
                 
                 let margeWidth = UIScreen.main.bounds.width - totalWidth
@@ -511,8 +494,7 @@ open class MLSegmentedControl: UIControl {
                     for width in array{
                       self.segmentWidth =  max(self.segmentWidth, width)
                     }
-                    
-//                    self.segmentWidth = max(self.segmentWidth, stringWidth)
+
                 }
                 
             }
@@ -563,7 +545,7 @@ open class MLSegmentedControl: UIControl {
         
     }
     
-    // FIXME:动态标题->计算总宽度
+    // MARK:totalSegmentedControlWidth
     func totalSegmentedControlWidth() -> CGFloat {
         
         if self.segmentWidthStyle == .dynamic {
@@ -577,18 +559,17 @@ open class MLSegmentedControl: UIControl {
     
 
     
-    // MARK: 绘制方法
+    // MARK: draw
     override open func draw(_ rect: CGRect) {
 
         self.selectionIndicatorStripLayer.backgroundColor = self.selectionIndicatorColor.cgColor
         self.selectionIndicatorArrowLayer.backgroundColor = self.selectionIndicatorColor.cgColor
         self.selectionIndicatorBoxLayer.backgroundColor = self.selectionIndicatorBoxColor.cgColor
 
-        // 绘制一个带有颜色的矩形
         self.backgroundColorSegment?.setFill()
         UIRectFill(self.bounds)
         
-        // 每次绘制都先清空在添加视图
+
         self.scrollView.layer.sublayers = nil
 
         switch self.type {
@@ -603,12 +584,12 @@ open class MLSegmentedControl: UIControl {
             break
         }
 
-      // 添加 其他附件视图 底部指示线/箭头/box
+
         self.configAttachmentView()
     }
     
     
-    // MARK: 加载文本和图片类型
+    // MARK: loadSegmentedControltypeTextImage
     func loadSegmentedControltypeTextImage(rect:CGRect){
         
         for (index, _) in self.sectionsTitles.enumerated() {
@@ -625,8 +606,7 @@ open class MLSegmentedControl: UIControl {
             var textOffsetX = self.segmentWidth * CGFloat(index)
             var imageOffsetY = CGFloat(ceilf(Float((self.frame.height -  imageHeight) * 0.5 )))
             var textOffsetY = CGFloat(ceilf(Float((self.frame.height -  stringHeight) * 0.5 )))
-            
-            // 填充
+
             var fullRect = CGRect.zero
             
             
@@ -707,12 +687,10 @@ open class MLSegmentedControl: UIControl {
 
                         imageOffsetX = offsetX + (self.segmentWidthsArray[currentIndex] - imageWidth) * 0.5
                         textOffsetX = offsetX + (self.segmentWidthsArray[currentIndex] - stringWidth) * 0.5
-                        // stringWidth 这里的宽度是文本的实际宽度，如果是动态加载应该取self.segmentWidthsArray这里面的宽度
                         stringWidth = self.segmentWidthsArray[currentIndex]
                     }else{
                         imageOffsetX = offsetX + (self.segmentWidthsArray[currentIndex] - imageWidth) * 0.5
                         textOffsetX = offsetX + (self.segmentWidthsArray[currentIndex] - stringWidth) * 0.5
-                        // stringWidth 这里的宽度是文本的实际宽度，如果是动态加载应该取self.segmentWidthsArray这里面的宽度
                         stringWidth = self.segmentWidthsArray[currentIndex]
                         let whiteSpace = self.frame.height - imageHeight - self.textImageSpacing - stringHeight
                         if self.imagePosition == .aboveText{
@@ -757,15 +735,13 @@ open class MLSegmentedControl: UIControl {
             self.addBackgroundAndBorderLayerWithRect(rect: fullRect)
             
         }
-        
-        
-        
+
     }
     
     
     
     
-    // MARK: 加载图片类型
+    // MARK: loadSegmentedControltypeImage
     func loadSegmentedControltypeImage(rect:CGRect){
         
         
@@ -799,12 +775,9 @@ open class MLSegmentedControl: UIControl {
             }else{
                 imageLayer.contents = image.cgImage
             }
-            
-            
-            
+
             self.scrollView.layer.addSublayer(imageLayer)
-            
-            // 添加分割线
+
             if self.verticalDividerEnabled == true && index > 0{
                 let verticalDividerLayer = CALayer.init()
                 verticalDividerLayer.backgroundColor = self.verticalDividerColor.cgColor
@@ -823,7 +796,7 @@ open class MLSegmentedControl: UIControl {
     
     
     
-    // MARK: 加载文本类型
+    // MARK: loadSegmentedControlTypeText
     func loadSegmentedControlTypeText(rect:CGRect){
     
     
@@ -840,8 +813,7 @@ open class MLSegmentedControl: UIControl {
             
       
             let locationUp:Bool = self.selectionIndicatorLocation == .up ? true : false
-            
-            // 非选中Box样式
+
             let selectionStyleNotBox = self.selectionStyle != .selectionStyleBox ? true : false
             
             
@@ -852,35 +824,25 @@ open class MLSegmentedControl: UIControl {
             
           
             var rectReslut:CGRect = CGRect.zero
-            if segmentWidthStyle == .fixed { // 固定宽度
+            if segmentWidthStyle == .fixed {
                 let x = self.segmentWidth * CGFloat(i) + (self.segmentWidth - stringWidth) * 0.5
-                
-
+    
                 rectReslut = CGRect.init(x: x, y: y, width: stringWidth, height: stringHeight)
-
-                // 分割线位置
                 rectDiv = CGRect.init(x:  self.segmentWidth * CGFloat(i) - self.verticalDividerWidth * 0.5, y: y, width: self.verticalDividerWidth, height: stringHeight)
-                // 填充
                 fullRect = CGRect.init(x: self.segmentWidth * CGFloat(i), y: 0, width: self.segmentWidth, height: rect.height)
-                
-
-            }else{// 动态加载宽度
+            }else{
 
                 var offset:CGFloat = 0
                 for (j,width) in self.segmentWidthsArray.enumerated() {
                     if i == j {break}
                      offset += width
                 }
-                
-                
                 if self.segmentWidthsArray.count > 0{
                     let stringWidth = self.segmentWidthsArray[i]
                     
                     rectReslut = CGRect.init(x: offset, y: y, width: stringWidth, height: stringHeight)
-                    
-                    // 分割线位置
+
                     rectDiv = CGRect.init(x:  offset - self.verticalDividerWidth * 0.5, y: y, width: self.verticalDividerWidth, height: stringHeight)
-                    // 填充 这里到底是 self.segmentWidth 还是 stringWidth 需要验证
                     fullRect = CGRect.init(x: offset, y: 0, width: stringWidth, height: rect.height)
                 }
                 
@@ -894,16 +856,14 @@ open class MLSegmentedControl: UIControl {
             
     
             fullRect = CGRect.init(x: CGFloat(roundf(Float(fullRect.origin.x))), y: CGFloat(roundf(Float(fullRect.origin.y))), width: CGFloat(roundf(Float(fullRect.size.width))), height: CGFloat(roundf(Float(fullRect.size.height))))
-            
-            
-            // 添加文字
+     
             let titleLayer = CATextLayer.init()
             titleLayer.string = self.textLayerAttributedStringForIndex(index: i);
             titleLayer.frame = rectReslut
             titleLayer.contentsScale = UIScreen.main.scale
             titleLayer.alignmentMode = kCAAlignmentCenter
             self.scrollView.layer.addSublayer(titleLayer)
-            // 添加分割线
+
             if self.verticalDividerEnabled == true && i > 0{
                 let verticalDividerLayer = CALayer.init()
                 verticalDividerLayer.backgroundColor = self.verticalDividerColor.cgColor
@@ -911,22 +871,12 @@ open class MLSegmentedControl: UIControl {
                 self.scrollView.layer.addSublayer(verticalDividerLayer)
             }
             
-            // 填充整个布局
             self.addBackgroundAndBorderLayerWithRect(rect: fullRect)
             
         }
 
     }
-    
- 
-    
 
-    
-    
-    
-    /// 计算标题的size
-    ///
-    /// - Parameter index: 索引
     func calculateTitleSizeAtIndex(index:Int) -> CGSize{
         
         if index >= self.sectionsTitles.count {
@@ -952,10 +902,7 @@ open class MLSegmentedControl: UIControl {
       
         return size
     }
-    
-    
-    
-    //MARK: 转换AttributedString
+
     func textLayerAttributedStringForIndex(index:Int) -> NSAttributedString{
        
         
@@ -980,10 +927,7 @@ open class MLSegmentedControl: UIControl {
         }
 
     }
-    
-    
-    
-    // MARK:默认标题设置
+
     func resultingTitleTextAttributes() -> [NSAttributedStringKey:Any] {
         
         var defaultDicts:[NSAttributedStringKey:Any] = [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 15),NSAttributedStringKey.foregroundColor:UIColor.init(red: 51/255.0, green: 51/255.0, blue: 51/255.0, alpha: 1)]
@@ -992,8 +936,7 @@ open class MLSegmentedControl: UIControl {
         }
           return defaultDicts
     }
-    
-    // MARK:选中标题设置
+
     func resultingSelectedTitleTextAttributes() -> [NSAttributedStringKey:Any] {
         var selectDicts:[NSAttributedStringKey:Any] = [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 15),NSAttributedStringKey.foregroundColor:UIColor.init(red: 247/255.0, green: 116/255.0, blue: 116/255.0, alpha: 1)]
 
@@ -1003,10 +946,7 @@ open class MLSegmentedControl: UIControl {
         }
         return selectDicts
     }
-    
-    
-    
-    // MARK:配置附件视图（底部指示线/箭头/Box）
+
     func configAttachmentView(){
         if self.selectedSegmentIndex != MLSegmentedControlNoSegment.noSelectSegment.rawValue {
             
@@ -1034,11 +974,8 @@ open class MLSegmentedControl: UIControl {
             
         }
     }
-    
-    
-    
-    
-    /// MARK:添加边缘线条
+
+    /// MARK:addBackgroundAndBorderLayerWithRect
     func addBackgroundAndBorderLayerWithRect(rect:CGRect){
         
         // add backgroundLayer
@@ -1076,7 +1013,7 @@ open class MLSegmentedControl: UIControl {
     }
     
     
-    // MARK:计算地图视图选中位置
+    // MARK:frameForSelectionIndicator
     func frameForSelectionIndicator() -> CGRect {
         
         var indicatorYOffset:CGFloat = 0
@@ -1133,14 +1070,7 @@ open class MLSegmentedControl: UIControl {
             }
             
         }else{
-            
-            
-            /** 三个条件x
-            条件一： self.selectionStyle == .MLSegmentedControlSelectionStyleTextWidthStripe：指示线和标题宽度一样
-            条件二： 标题宽度必须是固定的 即 MLSegmentedControlSegmentWidthStyleFixed
-            条件三： sectionWidth <= self.segmentWidth 如果 sectionWidth >  self.segmentWidth 说明标题一定是动态计算宽度的
-             
-             */
+
             if self.selectionStyle == .textWidthStripe && self.segmentWidthStyle == .fixed && sectionWidth <= self.segmentWidth{
                 let widthToStatrtOfSelectedSegment = self.segmentWidth * CGFloat(self.selectedSegmentIndex)
                 let widthToEndOfSelectedSegment =  self.segmentWidth * CGFloat(self.selectedSegmentIndex) + self.segmentWidth
@@ -1173,16 +1103,13 @@ open class MLSegmentedControl: UIControl {
     }
   
     
-    // MARK:计算箭头的位置
     func setArrowFrame(){
         self.selectionIndicatorArrowLayer.frame = self.frameForSelectionIndicator()
         let arrowLayer = CAShapeLayer()
-        // 获取一个矩形位置
-        arrowLayer.frame = self.selectionIndicatorArrowLayer.bounds
 
+        arrowLayer.frame = self.selectionIndicatorArrowLayer.bounds
         self.selectionIndicatorArrowLayer.mask = arrowLayer
-        
-        
+
         var pointOne:CGPoint = CGPoint.zero
         var pointTwo:CGPoint = CGPoint.zero
         var pointThree:CGPoint = CGPoint.zero
@@ -1210,8 +1137,7 @@ open class MLSegmentedControl: UIControl {
 
     }
     
-    
-    // MARK:计算BOX位置
+
     func frameForFillerSelectionIndicator() -> CGRect {
 
         if self.segmentWidthStyle == .dynamic {
@@ -1235,9 +1161,7 @@ open class MLSegmentedControl: UIControl {
     open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         
       guard let touchLoaction = touches.first?.location(in: self) else { return }
-        
-        
-        // 整个segementControl点击区域不是单个
+
       let enlargeRect = CGRect(x: self.bounds.origin.x - self.enlargeEdgeInset.left, y: self.bounds.origin.y - self.enlargeEdgeInset.top, width: self.bounds.width + self.enlargeEdgeInset.left + self.enlargeEdgeInset.right, height: self.bounds.height + self.enlargeEdgeInset.top + self.enlargeEdgeInset.bottom)
         
         var segmentIndex:Int = 0
@@ -1276,20 +1200,16 @@ open class MLSegmentedControl: UIControl {
         
     }
     
-    
-    // MARK: Index Change
-    
-    //MARK: 设置索引
-    
-    func setSelectedSegmentIndex(index:Int){
+
+   public func setSelectedSegmentIndex(index:Int){
         self.setSelectedSegmentIndex(index: index, animation: false, notify: false)
     }
     
-    func setSelectedSegmentIndex(index:Int,animation:Bool){
+   public func setSelectedSegmentIndex(index:Int,animation:Bool){
         self.setSelectedSegmentIndex(index: index, animation: animation, notify: false)
     }
     
-    func setSelectedSegmentIndex(index:Int,animation:Bool,notify:Bool){
+   public func setSelectedSegmentIndex(index:Int,animation:Bool,notify:Bool){
         self.selectedSegmentIndex = index
         self.setNeedsDisplay()
         if index == MLSegmentedControlNoSegment.noSelectSegment.rawValue {
@@ -1326,7 +1246,6 @@ open class MLSegmentedControl: UIControl {
 
                 }
                 
-                // 还原/恢复隐式动画
                 self.selectionIndicatorStripLayer.actions = nil
                 self.selectionIndicatorArrowLayer.actions = nil
                 self.selectionIndicatorBoxLayer.actions = nil
@@ -1334,7 +1253,6 @@ open class MLSegmentedControl: UIControl {
                 
                 CATransaction.begin()
                 CATransaction.setAnimationDuration(0.4)
-                // 线性动画，渐出动画
                 CATransaction.setAnimationTimingFunction(CAMediaTimingFunction.init(name: kCAMediaTimingFunctionLinear))
                 self.selectionIndicatorStripLayer.frame = self.frameForSelectionIndicator()
                 self.setArrowFrame()
@@ -1342,8 +1260,7 @@ open class MLSegmentedControl: UIControl {
                 CATransaction.commit()
    
             }else{
-                
-                // 禁用隐式动画，防止系统使用默认的方法执行动画
+
                 let actions = ["postion":NSNull(),"bounds":NSNull()]
                 self.selectionIndicatorBoxLayer.actions = actions
                 self.selectionIndicatorArrowLayer.actions = actions
@@ -1372,9 +1289,7 @@ open class MLSegmentedControl: UIControl {
         }
   
     }
-    
-   
-    // MARK:滚动到指定的位置
+
     func scrollToSelectedSegmentIndex(animation:Bool){
         var rectForSelectedIndex:CGRect = CGRect.zero
         var selectedSegmentOffset: CGFloat = 0

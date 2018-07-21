@@ -35,7 +35,7 @@ class ViewController: UIViewController {
             
         }
 
-         let segmentedControl = MLSegmentedControl.init(sectionsTitles: ["One","Two","three","four","five","six","seven"], sectionForImages: imagesArray, sectionSelectImages: seletImageArray)
+         let segmentedControl = MLSegmentedControl.init(sectionsTitles: ["One","Two","Three","Four","Five","Six","Seven"], sectionForImages: imagesArray, sectionSelectImages: seletImageArray)
          segmentedControl.frame = CGRect.init(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 40)
         segmentedControl.borderType = .none
         segmentedControl.textImageSpacing = 10
