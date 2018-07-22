@@ -7,8 +7,7 @@
 
 ## Preview
 
-     ![Demo](https://github.com/MrDML/MLSegmentedControl/blob/master/MLSegmentedControl.gif)
-    
+    ![Demo](https://github.com/MrDML/MLSegmentedControl/blob/master/MLSegmentedControl.gif)
 
 ## Example
 
