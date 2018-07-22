@@ -6,8 +6,8 @@
 [![Platform](https://img.shields.io/cocoapods/p/MLSegmentedControl.svg?style=flat)](https://cocoapods.org/pods/MLSegmentedControl)
 
 ## Preview
-
-    ![Demo](https://github.com/MrDML/MLSegmentedControl/blob/master/MLSegmentedControl.gif)
+![Demo](https://github.com/MrDML/MLSegmentedControl/blob/master/MLSegmentedControl.gif)
+    
 
 ## Example
 
