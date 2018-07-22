@@ -2,7 +2,7 @@
 //  MLSegmentedControl.swift
 //  MLSegmentedControl
 //
-//  Created by 戴明亮 on 2018/6/15.
+//  Created by MrDML on 2018/6/15.
 //
 
 import UIKit
@@ -35,13 +35,9 @@ public enum MLSegmentedWidthStyle: Int {
 /// - SelectionStyleBox: SelectionStyleBoxStyle
 /// - SelectionStyleArrow: SelectionStyleArrowStyle
 public enum MLSegmentedSelectionStyle:Int {
-    // 线条的宽度和文本size相等
     case textWidthStripe
-    // 线条和item相等
     case fullWidthStripe
-    // 填充整个item
     case selectionStyleBox
-    // 选中箭头样式
     case selectionStyleArrow
 }
 
@@ -1315,9 +1311,5 @@ open class MLSegmentedControl: UIControl {
 
     }
     
-    
-    
-    
-
 
 }

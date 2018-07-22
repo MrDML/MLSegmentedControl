@@ -14,6 +14,7 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
+		AE744A3521042A02002AB2FC /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE744A3421042A02002AB2FC /* DetailsViewController.swift */; };
 		AF100C91E5AFEBE50C2AE25C /* Pods_MLSegmentedControl_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA57C90390BDFFF89868D95 /* Pods_MLSegmentedControl_Example.framework */; };
 /* End PBXBuildFile section */
 
@@ -28,7 +29,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0A65C588A00D54211C161CAA /* MLSegmentedControl.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = MLSegmentedControl.podspec; path = ../MLSegmentedControl.podspec; sourceTree = "<group>"; };
+		0A65C588A00D54211C161CAA /* MLSegmentedControl.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = MLSegmentedControl.podspec; path = ../MLSegmentedControl.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		0BD74BD10AAEF257FFAC291F /* Pods_MLSegmentedControl_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MLSegmentedControl_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B36A68A1051A65453FB9B17 /* Pods-MLSegmentedControl_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MLSegmentedControl_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-MLSegmentedControl_Example/Pods-MLSegmentedControl_Example.release.xcconfig"; sourceTree = "<group>"; };
 		2CA57C90390BDFFF89868D95 /* Pods_MLSegmentedControl_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MLSegmentedControl_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -43,8 +44,9 @@
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		67841DF11DCB51E30AA84D74 /* Pods-MLSegmentedControl_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MLSegmentedControl_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MLSegmentedControl_Tests/Pods-MLSegmentedControl_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		91AB803AB8B166A218EC812C /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		ABD095D985B3A82EF74658F4 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		91AB803AB8B166A218EC812C /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		ABD095D985B3A82EF74658F4 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		AE744A3421042A02002AB2FC /* DetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
 		D60023DE6CB4EE2BB6ABC302 /* Pods-MLSegmentedControl_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MLSegmentedControl_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MLSegmentedControl_Example/Pods-MLSegmentedControl_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		FD4FFDEF77EEDF8F911B6CB0 /* Pods-MLSegmentedControl_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MLSegmentedControl_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MLSegmentedControl_Tests/Pods-MLSegmentedControl_Tests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -104,6 +106,7 @@
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
+				AE744A3421042A02002AB2FC /* DetailsViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -324,6 +327,7 @@
 			files = (
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				AE744A3521042A02002AB2FC /* DetailsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
