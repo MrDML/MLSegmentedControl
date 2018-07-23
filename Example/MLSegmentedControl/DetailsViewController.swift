@@ -118,7 +118,7 @@ class DetailsViewController: UIViewController {
         segmentedControl.addTarget(self, action: #selector(changeValueToIndex(segmentcontrol:)), for: [.valueChanged])
         segmentedControl.selectionChangeToIndexClosure = { (index:Int) -> Void in
             
-//            print("当前索引：\(index)")
+//            print("current index：\(index)")
         }
         self.view.addSubview(segmentedControl)
         

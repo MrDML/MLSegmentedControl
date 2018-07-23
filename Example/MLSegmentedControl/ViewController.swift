@@ -16,7 +16,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        dataArray = ["文本类型","图片类型","文本+图片类型"]
+        dataArray = ["文本类型(TextType)","图片类型(ImageType)","文本+图片类型(ImageTextType)"]
      
         configTableView()
     }

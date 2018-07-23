@@ -59,15 +59,15 @@ public enum MLSegmentedSelectionIndicatorLocation:Int {
 public struct MLSegmentedBorderType:OptionSet {
     
     public var rawValue: Int = 0
-    public  static let none = MLSegmentedBorderType(rawValue: 0) // 000000
+    public  static let none = MLSegmentedBorderType(rawValue: 0)
     
-    public  static let top = MLSegmentedBorderType(rawValue: 1 << 0) // 000001
+    public  static let top = MLSegmentedBorderType(rawValue: 1 << 0)
     
-    public  static let bottom = MLSegmentedBorderType(rawValue: 1 << 1) // 000010
+    public  static let bottom = MLSegmentedBorderType(rawValue: 1 << 1)
     
-    public static let left = MLSegmentedBorderType(rawValue: 1 << 2)// 000100
+    public static let left = MLSegmentedBorderType(rawValue: 1 << 2)
     
-    public static let right = MLSegmentedBorderType(rawValue: 1 << 3)// 001000
+    public static let right = MLSegmentedBorderType(rawValue: 1 << 3)
     
     public init(rawValue:Int){
         
@@ -181,8 +181,9 @@ open class MLSegmentedControl: UIControl {
     /// sectionImages
    public var sectionImages:Array<UIImage>{
         didSet{
-            self.setNeedsDisplay()  // 调整子视图的布局，下个周期起作用
-            self.layoutIfNeeded() // 立即更新子视图
+            self.updateSegmentsRects()
+            self.setNeedsDisplay()
+            self.layoutIfNeeded()
         }
     }
     
